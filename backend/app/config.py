@@ -2,8 +2,13 @@
 import os
 from dotenv import load_dotenv
 
-# Cargar las variables de entorno desde el archivo .env
-load_dotenv()
+# Cargar las variables de entorno desde el archivo .env usando su ruta absoluta
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+env_path = os.path.join(base_dir, ".env")
+if os.path.exists(env_path):
+    load_dotenv(env_path)
+else:
+    load_dotenv()
 
 class Config:
     """Clase para administrar la configuración de la aplicación."""
