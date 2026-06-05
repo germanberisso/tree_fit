@@ -1,0 +1,38 @@
+# Entornos virtuales de Python
+backend/venv/
+backend/app/venv/
+venv/
+.venv/
+env/
+
+# Base de datos SQLite local
+backend/*.db
+backend/app/*.db
+*.db
+
+# Variables de entorno y secretos
+backend/.env
+.env
+.env.local
+.env.*.local
+
+# Archivos de caché de Python
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.pytest_cache/
+
+# Dependencias y compilados de Node (Frontend)
+frontend/node_modules/
+frontend/dist/
+node_modules/
+dist/
+
+# Logs e historial de IDE
+*.log
+.system_generated/
+.gemini/
+.idea/
+.vscode/
+.DS_Store
