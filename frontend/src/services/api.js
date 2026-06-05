@@ -1,5 +1,5 @@
 // Servicio de conexión con la API del Backend (FastAPI)
-const URL_BASE = 'http://localhost:8000/api';
+const URL_BASE = 'http://localhost:8050/api';
 
 // Helper para obtener el token del almacenamiento local
 const obtenerToken = () => localStorage.getItem('tree_fit_token');
@@ -119,7 +119,7 @@ export const api = {
   
   finalizarEntrenamiento: (sesionId, notas, series) => realizarPeticion(`/entrenamientos/finalizar/${sesionId}`, {
     method: 'POST',
-    body: JSON.stringify({ notes: notas, series }) // FastAPI espera body con 'notas' mapeado en esquema 'notas'
+    body: JSON.stringify({ notas, series })
   }),
   
   obtenerHistorialEntrenamientos: (alumnoId) => realizarPeticion(`/entrenamientos/historial/${alumnoId}`, {

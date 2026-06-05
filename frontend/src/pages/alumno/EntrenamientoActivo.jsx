@@ -434,7 +434,7 @@ export const EntrenamientoActivo = () => {
               <textarea
                 className="input-control"
                 placeholder="¿Cómo te sentiste? Ej: Sensaciones excelentes en el pecho. Molestia leve en muñeca izquierda."
-                value={notes}
+                value={notas}
                 onChange={(e) => setNotas(e.target.value)}
                 rows="4"
               />
