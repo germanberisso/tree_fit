@@ -1,5 +1,6 @@
 // Vista Detalle del Alumno (Planificador de Rutinas y Biometría)
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { api } from '../../services/api';
 import { GraficosBiometria } from '../../components/GraficosBiometria';
 
@@ -612,7 +613,7 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
       </div>
 
       {/* Modal para Registrar Biometría */}
-      {mostrarModalBiometria && (
+      {mostrarModalBiometria && createPortal(
         <div className="modal-pantalla">
           <div className="tarjeta-vidrio modal-contenido animacion-aparicion" style={{ maxWidth: '450px' }}>
             <div className="modal-cabecera">
@@ -698,7 +699,8 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       <style>{`

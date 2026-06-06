@@ -1,5 +1,6 @@
 // Vista de Entrenamiento Activo ("Mi Entrenamiento" para Alumnos)
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { api } from '../../services/api';
 
 export const EntrenamientoActivo = () => {
@@ -421,7 +422,7 @@ export const EntrenamientoActivo = () => {
       )}
 
       {/* Modal para Finalizar y añadir Notas */}
-      {mostrarModalFinalizar && (
+      {mostrarModalFinalizar && createPortal(
         <div className="modal-pantalla">
           <div className="tarjeta-vidrio modal-contenido animacion-aparicion" style={{ maxWidth: '450px' }}>
             <div className="modal-cabecera">
@@ -453,7 +454,8 @@ export const EntrenamientoActivo = () => {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       <style>{`

@@ -1,5 +1,6 @@
 // Vista del Listado de Alumnos (Panel del Profesor)
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { api } from '../../services/api';
 
 export const ListaAlumnos = ({ seleccionarAlumno }) => {
@@ -159,7 +160,7 @@ export const ListaAlumnos = ({ seleccionarAlumno }) => {
       )}
 
       {/* Modal de alta de alumno */}
-      {mostrarModal && (
+      {mostrarModal && createPortal(
         <div className="modal-pantalla">
           <div className="tarjeta-vidrio modal-contenido animacion-aparicion">
             <div className="modal-cabecera">
@@ -244,7 +245,8 @@ export const ListaAlumnos = ({ seleccionarAlumno }) => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       <style>{`
@@ -376,64 +378,6 @@ export const ListaAlumnos = ({ seleccionarAlumno }) => {
           padding: 10px 14px;
         }
 
-        /* Modal estilos */
-        .modal-pantalla {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0,0,0,0.6);
-          backdrop-filter: blur(5px);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 1000;
-          padding: 20px;
-        }
-
-        .modal-contenido {
-          width: 100%;
-          max-width: 550px;
-          box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-          overflow-y: auto;
-          max-height: 90vh;
-        }
-
-        .modal-cabecera {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          border-bottom: 1px solid var(--color-borde);
-          padding-bottom: 15px;
-          margin-bottom: 20px;
-        }
-
-        .btn-cerrar {
-          background: none;
-          border: none;
-          color: var(--color-texto-secundario);
-          font-size: 1.2rem;
-          cursor: pointer;
-        }
-
-        .btn-cerrar:hover {
-          color: white;
-        }
-
-        .modal-formulario {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .modal-acciones {
-          display: flex;
-          justify-content: flex-end;
-          gap: 12px;
-          margin-top: 20px;
-          border-top: 1px solid var(--color-borde);
-          padding-top: 15px;
-        }
       `}</style>
     </div>
   );

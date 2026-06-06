@@ -1,5 +1,6 @@
 // Componente Principal de la Aplicación
 import React, { useState } from 'react';
+import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
@@ -63,6 +64,7 @@ const ContenidoApp = () => {
 function App() {
   return (
     <AuthProvider>
+      <Toaster position="top-right" />
       <ContenidoApp />
     </AuthProvider>
   );

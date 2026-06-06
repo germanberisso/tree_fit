@@ -1,4 +1,5 @@
 // Servicio de conexión con la API del Backend (FastAPI)
+import toast from 'react-hot-toast';
 const URL_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8050/api';
 
 // Helper para obtener el token del almacenamiento local
@@ -33,6 +34,7 @@ const realizarPeticion = async (endpoint, opciones = {}) => {
     return await respuesta.json();
   } catch (error) {
     console.error(`Error en API (${endpoint}):`, error);
+    toast.error(error.message || 'Error de conexión con el servidor.');
     throw error;
   }
 };
