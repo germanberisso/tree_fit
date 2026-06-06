@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.crear_db import asegurar_base_datos
+# from app.crear_db import asegurar_base_datos
 
 # Ejecutar verificación y creación de base de datos en caso de usar PostgreSQL
-asegurar_base_datos()
+# asegurar_base_datos()
 
 from app.database import engine, Base, SessionLocal
 from app.semilla import sembrar_datos
@@ -52,3 +52,8 @@ def check_salud():
         "aplicacion": "Tree Fit Backend",
         "mensaje": "Servidor de base de datos e interfaz API listos."
     }
+
+@app.get("/api/health")
+def health_check():
+    """Endpoint liviano para health checks y pings externos."""
+    return {"status": "ok"}

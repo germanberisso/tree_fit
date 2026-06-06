@@ -1,5 +1,5 @@
 // Servicio de conexión con la API del Backend (FastAPI)
-const URL_BASE = 'http://localhost:8050/api';
+const URL_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8050/api';
 
 // Helper para obtener el token del almacenamiento local
 const obtenerToken = () => localStorage.getItem('tree_fit_token');
@@ -20,14 +20,14 @@ const realizarPeticion = async (endpoint, opciones = {}) => {
 
   try {
     const respuesta = await fetch(`${URL_BASE}${endpoint}`, configuracion);
-    
+
     // Si la respuesta no es exitosa, arrojar un error con los detalles
     if (!respuesta.ok) {
       const errorData = await respuesta.json().catch(() => ({}));
       const mensaje = errorData.detail || 'Ocurrió un error en el servidor.';
       throw new Error(mensaje);
     }
-    
+
     // Retornar JSON si hay contenido
     if (respuesta.status === 204) return null;
     return await respuesta.json();
@@ -43,12 +43,12 @@ export const api = {
     method: 'POST',
     body: JSON.stringify(datos)
   }),
-  
+
   login: (email, clave) => realizarPeticion('/auth/login', {
     method: 'POST',
     body: JSON.stringify({ email, clave })
   }),
-  
+
   obtenerPerfil: () => realizarPeticion('/auth/perfil', {
     method: 'GET'
   }),
@@ -57,21 +57,21 @@ export const api = {
   listarAlumnos: () => realizarPeticion('/alumnos', {
     method: 'GET'
   }),
-  
+
   crearAlumno: (datos) => realizarPeticion('/alumnos', {
     method: 'POST',
     body: JSON.stringify(datos)
   }),
-  
+
   obtenerDetalleAlumno: (alumnoId) => realizarPeticion(`/alumnos/${alumnoId}`, {
     method: 'GET'
   }),
-  
+
   modificarPerfilAlumno: (alumnoId, datosPerfil) => realizarPeticion(`/alumnos/${alumnoId}`, {
     method: 'PUT',
     body: JSON.stringify(datosPerfil)
   }),
-  
+
   darDeBajaAlumno: (alumnoId) => realizarPeticion(`/alumnos/${alumnoId}`, {
     method: 'DELETE'
   }),
@@ -84,7 +84,7 @@ export const api = {
     const queryStr = query.length > 0 ? `?${query.join('&')}` : '';
     return realizarPeticion(`/ejercicios${queryStr}`, { method: 'GET' });
   },
-  
+
   listarEquipamiento: () => realizarPeticion('/equipamiento', {
     method: 'GET'
   }),
@@ -94,15 +94,15 @@ export const api = {
     method: 'POST',
     body: JSON.stringify(datosRutina)
   }),
-  
+
   obtenerRutinasAlumno: (alumnoId) => realizarPeticion(`/rutinas/alumno/${alumnoId}`, {
     method: 'GET'
   }),
-  
+
   obtenerRutinaActiva: (alumnoId) => realizarPeticion(`/rutinas/activa/${alumnoId}`, {
     method: 'GET'
   }),
-  
+
   eliminarRutina: (rutinaId) => realizarPeticion(`/rutinas/${rutinaId}`, {
     method: 'DELETE'
   }),
@@ -111,17 +111,17 @@ export const api = {
   obtenerEntrenamientoActivo: () => realizarPeticion('/entrenamientos/activo', {
     method: 'GET'
   }),
-  
+
   iniciarEntrenamiento: (rutinaId = null, diaRutinaId = null) => realizarPeticion('/entrenamientos/iniciar', {
     method: 'POST',
     body: JSON.stringify({ rutina_id: rutinaId, dia_rutina_id: diaRutinaId })
   }),
-  
+
   finalizarEntrenamiento: (sesionId, notas, series) => realizarPeticion(`/entrenamientos/finalizar/${sesionId}`, {
     method: 'POST',
     body: JSON.stringify({ notas, series })
   }),
-  
+
   obtenerHistorialEntrenamientos: (alumnoId) => realizarPeticion(`/entrenamientos/historial/${alumnoId}`, {
     method: 'GET'
   }),
@@ -131,11 +131,11 @@ export const api = {
     method: 'POST',
     body: JSON.stringify(datosBiometricos)
   }),
-  
+
   obtenerBiometriaAlumno: (alumnoId) => realizarPeticion(`/biometria/${alumnoId}`, {
     method: 'GET'
   }),
-  
+
   eliminarRegistroBiometrico: (alumnoId, registroId) => realizarPeticion(`/biometria/${alumnoId}/${registroId}`, {
     method: 'DELETE'
   })
