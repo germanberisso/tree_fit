@@ -22,8 +22,13 @@ export const ProgresoBiometrico = () => {
       const data = await api.obtenerBiometriaAlumno(perfil.id);
       setRegistros(data);
       if (data.length > 0) {
-        // Pre-cargar la última altura registrada
-        setAltura(data[data.length - 1].altura);
+        // Pre-cargar todos los valores de la última medición registrada
+        const ultima = data[data.length - 1];
+        setPeso(ultima.peso || '');
+        setAltura(ultima.altura || '');
+        setPorcentajeGrasa(ultima.porcentaje_grasa || '');
+        setPorcentajeMusculo(ultima.porcentaje_musculo || '');
+        setCintura(ultima.cintura || '');
       }
     } catch (err) {
       setError(err.message || 'Error al cargar los datos biométricos.');
@@ -179,6 +184,7 @@ export const ProgresoBiometrico = () => {
                     <tr>
                       <th>Fecha</th>
                       <th>Peso</th>
+                      <th>Altura</th>
                       <th>Grasa</th>
                       <th>Músculo</th>
                       <th>Cintura</th>
@@ -190,6 +196,7 @@ export const ProgresoBiometrico = () => {
                       <tr key={reg.id}>
                         <td>{new Date(reg.fecha_registro).toLocaleDateString()}</td>
                         <td><strong>{reg.peso} kg</strong></td>
+                        <td>{reg.altura} cm</td>
                         <td>{reg.porcentaje_grasa ? `${reg.porcentaje_grasa}%` : '-'}</td>
                         <td>{reg.porcentaje_musculo ? `${reg.porcentaje_musculo}%` : '-'}</td>
                         <td>{reg.cintura ? `${reg.cintura} cm` : '-'}</td>

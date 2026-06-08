@@ -25,16 +25,19 @@ class UsuarioBase(BaseModel):
 class UsuarioCrear(UsuarioBase):
     clave: str
 
+class VincularAlumno(BaseModel):
+    email: EmailStr
+
 class UsuarioRespuesta(BaseModel):
     id: int
     email: EmailStr
     nombre_completo: str
     rol: str
     fecha_creacion: datetime
+    perfil_alumno: Optional["PerfilAlumnoRespuesta"] = None
 
     class Config:
         from_attributes = True
-
 
 class PerfilAlumnoBase(BaseModel):
     fecha_nacimiento: Optional[date] = None
@@ -61,17 +64,17 @@ class PerfilAlumnoRespuesta(BaseModel):
     objetivos_iniciales: Optional[str] = None
     historial_salud: Optional[str] = None
     profesor_id: Optional[int] = None
+    profesor: Optional[UsuarioRespuesta] = None
 
     class Config:
         from_attributes = True
-
 
 class DetalleAlumnoCompleto(BaseModel):
     id: int
     email: EmailStr
     nombre_completo: str
     fecha_creacion: datetime
-    perfil: Optional[PerfilAlumnoRespuesta] = None
+    perfil_alumno: Optional[PerfilAlumnoRespuesta] = None
 
     class Config:
         from_attributes = True
@@ -83,6 +86,14 @@ class EquipamientoBase(BaseModel):
     nombre: str
     descripcion: Optional[str] = None
     disponible: bool = True
+
+class EquipamientoCrear(EquipamientoBase):
+    pass
+
+class EquipamientoActualizar(BaseModel):
+    nombre: Optional[str] = None
+    descripcion: Optional[str] = None
+    disponible: Optional[bool] = None
 
 class EquipamientoRespuesta(EquipamientoBase):
     id: int
@@ -98,8 +109,12 @@ class EjercicioBase(BaseModel):
     video_url: Optional[str] = None
     equipamiento_id: Optional[int] = None
 
+class EjercicioCrear(EjercicioBase):
+    pass
+
 class EjercicioRespuesta(EjercicioBase):
     id: int
+    activo: bool = True
     equipamiento: Optional[EquipamientoRespuesta] = None
 
     class Config:
@@ -123,6 +138,9 @@ class EjercicioRutinaRespuesta(EjercicioRutinaBase):
     id: int
     dia_rutina_id: int
     ejercicio: Optional[EjercicioRespuesta] = None
+    # Campos RF8: estado de habilitación en tiempo real (calculado al consultar)
+    habilitado_actual: bool = True
+    motivo_no_habilitado: Optional[str] = None
 
     class Config:
         from_attributes = True

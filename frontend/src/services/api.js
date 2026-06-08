@@ -25,6 +25,12 @@ const realizarPeticion = async (endpoint, opciones = {}) => {
     // Si la respuesta no es exitosa, arrojar un error con los detalles
     if (!respuesta.ok) {
       const errorData = await respuesta.json().catch(() => ({}));
+      // si el error tiene estructura {mensaje, errores[]}, propagarlo tal cual
+      if (errorData.detail && typeof errorData.detail === 'object' && errorData.detail.errores) {
+        const err = new Error(errorData.detail.mensaje || 'Error de validación.');
+        err.erroresValidacion = errorData.detail.errores;
+        throw err;
+      }
       const mensaje = errorData.detail || 'Ocurrió un error en el servidor.';
       throw new Error(mensaje);
     }
@@ -34,7 +40,10 @@ const realizarPeticion = async (endpoint, opciones = {}) => {
     return await respuesta.json();
   } catch (error) {
     console.error(`Error en API (${endpoint}):`, error);
-    toast.error(error.message || 'Error de conexión con el servidor.');
+    // Solo mostrar toast si no es un error de validación estructurado y si no está silenciado
+    if (!error.erroresValidacion && !opciones.silencioso) {
+      toast.error(error.message || 'Error de conexión con el servidor.');
+    }
     throw error;
   }
 };
@@ -65,6 +74,11 @@ export const api = {
     body: JSON.stringify(datos)
   }),
 
+  vincularAlumno: (email) => realizarPeticion('/alumnos/vincular', {
+    method: 'POST',
+    body: JSON.stringify({ email })
+  }),
+
   obtenerDetalleAlumno: (alumnoId) => realizarPeticion(`/alumnos/${alumnoId}`, {
     method: 'GET'
   }),
@@ -79,16 +93,41 @@ export const api = {
   }),
 
   // Ejercicios y Equipamiento
-  listarEjercicios: (grupoMuscular = '', busqueda = '') => {
+  listarEjercicios: (grupoMuscular = '', busqueda = '', soloActivos = false) => {
     let query = [];
     if (grupoMuscular) query.push(`grupo_muscular=${encodeURIComponent(grupoMuscular)}`);
     if (busqueda) query.push(`busqueda=${encodeURIComponent(busqueda)}`);
+    if (soloActivos) query.push(`solo_activos=true`);
     const queryStr = query.length > 0 ? `?${query.join('&')}` : '';
     return realizarPeticion(`/ejercicios${queryStr}`, { method: 'GET' });
   },
 
   listarEquipamiento: () => realizarPeticion('/equipamiento', {
     method: 'GET'
+  }),
+
+  crearEquipamiento: (datos) => realizarPeticion('/equipamiento', {
+    method: 'POST',
+    body: JSON.stringify(datos)
+  }),
+
+  editarEquipamiento: (id, datos) => realizarPeticion(`/equipamiento/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(datos)
+  }),
+
+  cambiarDisponibilidadEquipamiento: (id, disponible) =>
+    realizarPeticion(`/equipamiento/${id}/disponibilidad?disponible=${disponible}`, {
+      method: 'PATCH'
+    }),
+
+  crearEjercicio: (datos) => realizarPeticion('/ejercicios', {
+    method: 'POST',
+    body: JSON.stringify(datos)
+  }),
+
+  darDeBajaEjercicio: (id) => realizarPeticion(`/ejercicios/${id}`, {
+    method: 'DELETE'
   }),
 
   // Rutinas
@@ -102,7 +141,8 @@ export const api = {
   }),
 
   obtenerRutinaActiva: (alumnoId) => realizarPeticion(`/rutinas/activa/${alumnoId}`, {
-    method: 'GET'
+    method: 'GET',
+    silencioso: true
   }),
 
   eliminarRutina: (rutinaId) => realizarPeticion(`/rutinas/${rutinaId}`, {
@@ -111,7 +151,8 @@ export const api = {
 
   // Registro de Sesiones en tiempo real ("Mi Entrenamiento")
   obtenerEntrenamientoActivo: () => realizarPeticion('/entrenamientos/activo', {
-    method: 'GET'
+    method: 'GET',
+    silencioso: true
   }),
 
   iniciarEntrenamiento: (rutinaId = null, diaRutinaId = null) => realizarPeticion('/entrenamientos/iniciar', {

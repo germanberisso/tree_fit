@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from app.database import obtener_db
 from app.modelos import Usuario, PerfilAlumno
-from app.esquemas import UsuarioCrear, DetalleAlumnoCompleto, PerfilAlumnoCrear, PerfilAlumnoRespuesta
+from app.esquemas import UsuarioCrear, DetalleAlumnoCompleto, PerfilAlumnoCrear, PerfilAlumnoRespuesta, VincularAlumno
 from app.rutas.autenticacion import obtener_usuario_actual
 from app.seguridad import obtener_clave_hash
 
@@ -76,6 +76,37 @@ def crear_alumno(
     db.refresh(nuevo_alumno)
 
     return nuevo_alumno
+
+@router.post("/vincular", response_model=DetalleAlumnoCompleto, status_code=status.HTTP_200_OK)
+def vincular_alumno(
+    vincular_in: VincularAlumno,
+    db: Session = Depends(obtener_db),
+    usuario_actual: Usuario = Depends(obtener_usuario_actual)
+):
+    """Vincula un alumno existente (que se registró por su cuenta) a la cartera del profesor."""
+    if usuario_actual.rol != "profesor":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Solo profesores pueden vincular alumnos.")
+
+    alumno = db.query(Usuario).filter(Usuario.email == vincular_in.email).first()
+    if not alumno:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No existe ninguna cuenta con ese correo electrónico.")
+    
+    if alumno.rol != "alumno":
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El correo pertenece a un profesor, no a un alumno.")
+
+    perfil = alumno.perfil_alumno
+    if not perfil:
+        perfil = PerfilAlumno(id=alumno.id, profesor_id=usuario_actual.id)
+        db.add(perfil)
+        db.commit()
+    elif perfil.profesor_id is not None and perfil.profesor_id != usuario_actual.id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El alumno ya está asignado a otro profesor.")
+    else:
+        perfil.profesor_id = usuario_actual.id
+        db.commit()
+
+    db.refresh(alumno)
+    return alumno
 
 @router.get("/{alumno_id}", response_model=DetalleAlumnoCompleto)
 def obtener_detalle_alumno(
@@ -169,8 +200,8 @@ def dar_de_baja_alumno(
             detail="Este alumno no pertenece a su cartera de clientes."
         )
 
-    # Realizar la baja completa del usuario alumno (para mantener la cartera limpia)
-    db.delete(alumno)
+    # Desvincular al alumno en lugar de eliminar la cuenta permanentemente
+    perfil.profesor_id = None
     db.commit()
 
-    return {"mensaje": "El alumno ha sido dado de baja correctamente."}
+    return {"mensaje": "El alumno ha sido desvinculado correctamente."}

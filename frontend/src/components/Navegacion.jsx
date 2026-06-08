@@ -30,6 +30,11 @@ export const Navegacion = ({ vistaActiva, setVistaActiva }) => {
           <p className="usuario-info">
             {usuario.nombre_completo}
             <span className="usuario-rol">{usuario.rol}</span>
+            {!esProfesor && (
+              <span style={{ fontSize: '0.75rem', marginTop: '2px', opacity: 0.8, fontWeight: 'normal' }}>
+                👨‍🏫 Prof: {usuario.perfil_alumno?.profesor?.nombre_completo || 'No asignado'}
+              </span>
+            )}
           </p>
         </div>
 

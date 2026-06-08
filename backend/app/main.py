@@ -13,6 +13,7 @@ from app.rutas import autenticacion, alumnos, ejercicios, rutinas, entrenamiento
 # Crear las tablas de la base de datos si no existen
 Base.metadata.create_all(bind=engine)
 
+
 # Sembrar datos iniciales en la base de datos (ejercicios y equipamiento)
 db = SessionLocal()
 try:

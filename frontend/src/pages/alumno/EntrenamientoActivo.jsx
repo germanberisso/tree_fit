@@ -37,6 +37,13 @@ export const EntrenamientoActivo = () => {
       // Obtener el ID del usuario del token decodificado o del perfil
       const perfil = await api.obtenerPerfil();
       
+      // Si el alumno está desvinculado (no tiene profesor asignado), no mostrar rutina
+      if (!perfil.perfil_alumno?.profesor_id) {
+        setRutina(null);
+        setCargando(false);
+        return;
+      }
+
       const rut = await api.obtenerRutinaActiva(perfil.id);
       setRutina(rut);
       if (rut && rut.dias.length > 0) {
@@ -54,10 +61,12 @@ export const EntrenamientoActivo = () => {
           if (diaActivo) setDiaSeleccionado(diaActivo);
         }
 
-        // Calcular el tiempo transcurrido desde que inició
-        const inicio = new Date(sesion.fecha_inicio).getTime();
+        // Calcular el tiempo transcurrido desde que inició (asegurando tratarlo como UTC si falta la Z)
+        const fechaInicioValida = sesion.fecha_inicio.endsWith('Z') ? sesion.fecha_inicio : sesion.fecha_inicio + 'Z';
+        const inicio = new Date(fechaInicioValida).getTime();
         const ahora = new Date().getTime();
-        setTiempoTranscurrido(Math.floor((ahora - inicio) / 1000));
+        const transcurrido = Math.floor((ahora - inicio) / 1000);
+        setTiempoTranscurrido(transcurrido > 0 ? transcurrido : 0);
         setRelojCorriendo(true);
       } catch (e) {
         // No hay sesión activa, normal
@@ -131,14 +140,17 @@ export const EntrenamientoActivo = () => {
       setTiempoTranscurrido(0);
       setRelojCorriendo(true);
 
-      // Inicializar el diccionario de cargas reales con los valores objetivo
+      // Inicializar el diccionario de cargas reales solo para ejercicios habilitados
       const inicialCargas = {};
       diaSeleccionado.ejercicios_rutina.forEach((ej) => {
+        // Si el ejercicio no está habilitado, no inicializar cargas (no se puede registrar)
+        if (ej.habilitado_actual === false) return;
+
         inicialCargas[ej.ejercicio_id] = Array.from({ length: ej.series }, (_, index) => {
           // Extraer número sugerido de la carga objetivo (ej: '20kg' -> 20)
           const pesoSugerido = parseFloat(ej.carga_objetivo.replace(/[^0-9.]/g, '')) || 10;
           const repeticionesSugeridas = parseInt(ej.repeticiones.split('-')[0]) || 10;
-          
+
           return {
             numero_serie: index + 1,
             repeticiones: repeticionesSugeridas,
@@ -178,7 +190,7 @@ export const EntrenamientoActivo = () => {
   const finalizarSesion = async () => {
     if (!sesionActiva) return;
 
-    // Aplanar las series cargadas
+    // Aplanar las series cargadas (excluir ejercicios no habilitados)
     const seriesPayload = [];
     Object.keys(cargasReales).forEach((ejId) => {
       cargasReales[ejId].forEach((serie) => {
@@ -194,9 +206,22 @@ export const EntrenamientoActivo = () => {
       });
     });
 
-    if (seriesPayload.length === 0) {
-      alert('Debes registrar al menos una serie completada para finalizar el entrenamiento.');
-      return;
+    // Calcular el total de series habilitadas posibles en este día
+    let totalSeriesHabilitadas = 0;
+    if (diaSeleccionado && diaSeleccionado.ejercicios_rutina) {
+      diaSeleccionado.ejercicios_rutina.forEach(ej => {
+        if (ej.habilitado_actual !== false) {
+          totalSeriesHabilitadas += ej.series;
+        }
+      });
+    }
+
+    if (seriesPayload.length < totalSeriesHabilitadas) {
+      const msj = seriesPayload.length === 0 
+        ? 'No has registrado ninguna serie completada. ¿Estás seguro de que quieres finalizar el entrenamiento de todos modos?'
+        : 'No completaste todas las series planificadas. ¿Estás seguro de que quieres finalizar el entrenamiento de todos modos?';
+      const confirmar = window.confirm(msj);
+      if (!confirmar) return;
     }
 
     try {
@@ -327,9 +352,14 @@ export const EntrenamientoActivo = () => {
               <h4>Ejercicios Planificados:</h4>
               <div className="lista-previa-ej">
                 {diaSeleccionado.ejercicios_rutina.map((ej, idx) => (
-                  <div key={ej.id} className="item-previa-ej">
-                    <span>{idx + 1}. <strong>{ej.ejercicio.nombre}</strong></span>
-                    <span className="badge badge-primario">{ej.series}x{ej.repeticiones} ({ej.carga_objetivo})</span>
+                  <div key={ej.id} className={`item-previa-ej ${ej.habilitado_actual === false ? 'item-previa-bloqueado' : ''}`}>
+                    <span>
+                      {idx + 1}. <strong>{ej.ejercicio.nombre}</strong>
+                      {ej.habilitado_actual === false && <span style={{ color: '#f87171', fontSize: '0.78rem', marginLeft: '6px' }}>🚫 No disponible</span>}
+                    </span>
+                    {ej.habilitado_actual !== false && (
+                      <span className="badge badge-primario">{ej.series}x{ej.repeticiones} ({ej.carga_objetivo})</span>
+                    )}
                   </div>
                 ))}
               </div>
@@ -352,68 +382,80 @@ export const EntrenamientoActivo = () => {
 
           <div className="lista-ejercicios-ejecucion">
             {diaSeleccionado.ejercicios_rutina.map((ej) => {
+              const noHabilitado = ej.habilitado_actual === false;
               const cargasEj = cargasReales[ej.ejercicio_id] || [];
               return (
-                <div key={ej.id} className="tarjeta-vidrio tarjeta-ejercicio-ejecucion">
+                <div key={ej.id} className={`tarjeta-vidrio tarjeta-ejercicio-ejecucion ${noHabilitado ? 'ejercicio-bloqueado' : ''}`}>
                   <div className="cabecera-ejercicio-ejecucion">
                     <div>
-                      <h4>{ej.ejercicio.nombre}</h4>
-                      <p className="objetivo-ejercicio-ejecucion">
-                        Objetivo: <strong>{ej.series} Series</strong> x <strong>{ej.repeticiones} Reps</strong> con <strong>{ej.carga_objetivo}</strong> (Descanso: {ej.descanso_segundos}s)
-                      </p>
+                      <h4>
+                        {ej.ejercicio.nombre}
+                        {noHabilitado && <span className="badge-bloqueado">🚫 No habilitado</span>}
+                      </h4>
+                      {noHabilitado ? (
+                        <p className="motivo-no-habilitado">{ej.motivo_no_habilitado}</p>
+                      ) : (
+                        <p className="objetivo-ejercicio-ejecucion">
+                          Objetivo: <strong>{ej.series} Series</strong> x <strong>{ej.repeticiones} Reps</strong> con <strong>{ej.carga_objetivo}</strong> (Descanso: {ej.descanso_segundos}s)
+                        </p>
+                      )}
                     </div>
-                    {ej.ejercicio.video_url && (
+                    {ej.ejercicio.video_url && !noHabilitado && (
                       <a href={ej.ejercicio.video_url} target="_blank" rel="noopener noreferrer" className="btn-link-demo">
                         🎬 Demo
                       </a>
                     )}
                   </div>
 
-                  {/* Tabla de Series de Entrada */}
-                  <table className="tabla-series-ejecucion">
-                    <thead>
-                      <tr>
-                        <th style={{ width: '60px' }}>Serie</th>
-                        <th>Repeticiones</th>
-                        <th>Carga (kg)</th>
-                        <th style={{ width: '80px', textAlign: 'center' }}>Hecho</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {cargasEj.map((serie, idx) => (
-                        <tr key={idx} className={serie.completado ? 'serie-completada-fila' : ''}>
-                          <td><strong>#{serie.numero_serie}</strong></td>
-                          <td>
-                            <input
-                              type="number"
-                              className="input-control-serie"
-                              value={serie.repeticiones}
-                              onChange={(e) => cambiarValorSerie(ej.ejercicio_id, idx, 'repeticiones', e.target.value)}
-                              disabled={serie.completado}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="number"
-                              step="0.5"
-                              className="input-control-serie"
-                              value={serie.peso}
-                              onChange={(e) => cambiarValorSerie(ej.ejercicio_id, idx, 'peso', e.target.value)}
-                              disabled={serie.completado}
-                            />
-                          </td>
-                          <td style={{ textAlign: 'center' }}>
-                            <button
-                              onClick={() => alternarSerieCompletada(ej.ejercicio_id, idx, ej.descanso_segundos)}
-                              className={`btn-check-serie ${serie.completado ? 'check-activo' : ''}`}
-                            >
-                              {serie.completado ? '✓' : '○'}
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                  {/* Tabla de Series: solo si está habilitado */}
+                  {!noHabilitado && (
+                    <div className="tabla-contenedor" style={{ marginTop: '15px' }}>
+                      <table className="tabla-series-ejecucion" style={{ width: '100%', minWidth: '280px' }}>
+                        <thead>
+                          <tr>
+                            <th style={{ width: '60px' }}>Serie</th>
+                            <th>Repeticiones</th>
+                            <th>Carga (kg)</th>
+                            <th style={{ width: '80px', textAlign: 'center' }}>Hecho</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {cargasEj.map((serie, idx) => (
+                            <tr key={idx} className={serie.completado ? 'serie-completada-fila' : ''}>
+                              <td><strong>#{serie.numero_serie}</strong></td>
+                              <td>
+                                <input
+                                  type="number"
+                                  className="input-control-serie"
+                                  value={serie.repeticiones}
+                                  onChange={(e) => cambiarValorSerie(ej.ejercicio_id, idx, 'repeticiones', e.target.value)}
+                                  disabled={serie.completado}
+                                />
+                              </td>
+                              <td>
+                                <input
+                                  type="number"
+                                  step="0.5"
+                                  className="input-control-serie"
+                                  value={serie.peso}
+                                  onChange={(e) => cambiarValorSerie(ej.ejercicio_id, idx, 'peso', e.target.value)}
+                                  disabled={serie.completado}
+                                />
+                              </td>
+                              <td style={{ textAlign: 'center' }}>
+                                <button
+                                  onClick={() => alternarSerieCompletada(ej.ejercicio_id, idx, ej.descanso_segundos)}
+                                  className={`btn-check-serie ${serie.completado ? 'check-activo' : ''}`}
+                                >
+                                  {serie.completado ? '✓' : '○'}
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -785,6 +827,53 @@ export const EntrenamientoActivo = () => {
           text-align: center;
           gap: 15px;
           color: var(--color-texto-secundario);
+        }
+
+        /* Ejercicio bloqueado por RF8 */
+        .ejercicio-bloqueado {
+          opacity: 0.65;
+          border-color: rgba(245, 158, 11, 0.35) !important;
+          background: rgba(245, 158, 11, 0.03) !important;
+        }
+
+        .badge-bloqueado {
+          display: inline-block;
+          font-size: 0.65rem;
+          background: rgba(245, 158, 11, 0.15);
+          color: #fbbf24;
+          border-radius: 4px;
+          padding: 2px 7px;
+          margin-left: 10px;
+          font-weight: 700;
+          vertical-align: middle;
+        }
+
+        .motivo-no-habilitado {
+          font-size: 0.82rem;
+          color: #fbbf24;
+          margin-top: 5px;
+          font-style: italic;
+        }
+
+        .item-previa-bloqueado {
+          opacity: 0.6;
+          border-left: 2px solid rgba(245, 158, 11, 0.5);
+        }
+
+        @media (max-width: 480px) {
+          .ejecucion-cabecera {
+            flex-direction: column;
+            gap: 15px;
+            align-items: stretch;
+            text-align: center;
+          }
+          .ejecucion-cabecera .btn-exito {
+            width: 100%;
+          }
+          .cabecera-ejercicio-ejecucion {
+            flex-direction: column;
+            gap: 10px;
+          }
         }
       `}</style>
     </div>

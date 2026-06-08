@@ -10,9 +10,12 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
   const [biometria, setBiometria] = useState([]);
   const [historialEntrenamientos, setHistorialEntrenamientos] = useState([]);
   const [cargando, setCargando] = useState(true);
-  
+
   // Catálogo completo de ejercicios
   const [catalogoEjercicios, setCatalogoEjercicios] = useState([]);
+
+  // Estado de errores de validación al crear rutina
+  const [erroresValidacion, setErroresValidacion] = useState([]);
 
   // Estados para Edición de Ficha Médica
   const [editandoFicha, setEditandoFicha] = useState(false);
@@ -20,6 +23,8 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
   const [historialSalud, setHistorialSalud] = useState('');
   const [telefono, setTelefono] = useState('');
   const [contactoEmergencia, setContactoEmergencia] = useState('');
+  const [fechaNacimiento, setFechaNacimiento] = useState('');
+  const [genero, setGenero] = useState('');
 
   // Estados para Registro de Nueva Biometría
   const [mostrarModalBiometria, setMostrarModalBiometria] = useState(false);
@@ -42,15 +47,17 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
       setCargando(true);
       const datosAlumno = await api.obtenerDetalleAlumno(alumnoId);
       setAlumno(datosAlumno);
-      
-      // Cargar campos de ficha
-      setObjetivos(datosAlumno.perfil?.objetivos_iniciales || '');
-      setHistorialSalud(datosAlumno.perfil?.historial_salud || '');
-      setTelefono(datosAlumno.perfil?.telefono || '');
-      setContactoEmergencia(datosAlumno.perfil?.contacto_emergencia || '');
 
-      // Cargar catálogo de ejercicios
-      const ejercicios = await api.listarEjercicios();
+      // Cargar campos de ficha
+      setObjetivos(datosAlumno.perfil_alumno?.objetivos_iniciales || '');
+      setHistorialSalud(datosAlumno.perfil_alumno?.historial_salud || '');
+      setTelefono(datosAlumno.perfil_alumno?.telefono || '');
+      setContactoEmergencia(datosAlumno.perfil_alumno?.contacto_emergencia || '');
+      setFechaNacimiento(datosAlumno.perfil_alumno?.fecha_nacimiento || '');
+      setGenero(datosAlumno.perfil_alumno?.genero || '');
+
+      // Cargar catálogo de ejercicios (solo activos para asignar a rutinas)
+      const ejercicios = await api.listarEjercicios('', '', true);
       setCatalogoEjercicios(ejercicios);
 
       // Cargar rutina activa (manejar 404 si no hay)
@@ -87,7 +94,9 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
         objetivos_iniciales: objetivos,
         historial_salud: historialSalud,
         telefono,
-        contacto_emergencia: contactoEmergencia
+        contacto_emergencia: contactoEmergencia,
+        fecha_nacimiento: fechaNacimiento || null,
+        genero: genero || null
       });
       setEditandoFicha(false);
       cargarDatos();
@@ -152,7 +161,7 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
   const agregarEjercicioADia = (diaIndice, ejercicioId) => {
     const nuevosDias = [...diasRutina];
     const dia = nuevosDias[diaIndice];
-    
+
     // Obtener el ejercicio seleccionado del catálogo
     const ejercicio = catalogoEjercicios.find(e => e.id === parseInt(ejercicioId));
     if (!ejercicio) return;
@@ -184,13 +193,13 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
   const cambiarParametroEjercicio = (diaIndice, ejIndice, campo, valor) => {
     const nuevosDias = [...diasRutina];
     const ejercicio = nuevosDias[diaIndice].ejercicios_rutina[ejIndice];
-    
+
     if (campo === 'series' || campo === 'descanso_segundos') {
       ejercicio[campo] = parseInt(valor) || 0;
     } else {
       ejercicio[campo] = valor;
     }
-    
+
     setDiasRutina(nuevosDias);
   };
 
@@ -201,6 +210,8 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
       alert('La rutina debe contener al menos un día con ejercicios.');
       return;
     }
+
+    setErroresValidacion([]); // Limpiar errores anteriores
 
     try {
       // Formatear payload para cumplir el Pydantic RutinaCrear
@@ -224,9 +235,15 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
 
       await api.crearRutina(payload);
       setMostrarCreadorRutina(false);
+      setErroresValidacion([]);
       cargarDatos();
     } catch (err) {
-      alert('Error al crear rutina: ' + err.message);
+      // mostrar errores de validación en la UI en vez de alert genérico
+      if (err.erroresValidacion && err.erroresValidacion.length > 0) {
+        setErroresValidacion(err.erroresValidacion);
+      } else {
+        alert('Error al crear rutina: ' + err.message);
+      }
     }
   };
 
@@ -249,8 +266,10 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
             <h2>{alumno.nombre_completo}</h2>
             <p className="email-alumno">{alumno.email}</p>
             <div className="datos-contacto">
-              {alumno.perfil?.telefono && <span>📞 {alumno.perfil.telefono}</span>}
-              {alumno.perfil?.contacto_emergencia && <span>🚨 Emergencia: {alumno.perfil.contacto_emergencia}</span>}
+              {alumno.perfil_alumno?.telefono && <span>📞 {alumno.perfil_alumno.telefono}</span>}
+              {alumno.perfil_alumno?.contacto_emergencia && <span>🚨 Emergencia: {alumno.perfil_alumno.contacto_emergencia}</span>}
+              {alumno.perfil_alumno?.fecha_nacimiento && <span>🎂 Nacimiento: {alumno.perfil_alumno.fecha_nacimiento}</span>}
+              {alumno.perfil_alumno?.genero && <span>👤 Género: {alumno.perfil_alumno.genero}</span>}
             </div>
           </div>
         </div>
@@ -276,6 +295,30 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
                   onChange={(e) => setHistorialSalud(e.target.value)}
                   rows="2"
                 />
+              </div>
+              <div className="fila-inputs">
+                <div className="input-grupo">
+                  <label>Fecha de Nacimiento</label>
+                  <input
+                    type="date"
+                    className="input-control"
+                    value={fechaNacimiento}
+                    onChange={(e) => setFechaNacimiento(e.target.value)}
+                  />
+                </div>
+                <div className="input-grupo">
+                  <label>Género</label>
+                  <select
+                    className="input-control"
+                    value={genero}
+                    onChange={(e) => setGenero(e.target.value)}
+                  >
+                    <option value="">Seleccionar...</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Femenino">Femenino</option>
+                    <option value="Otro">Otro</option>
+                  </select>
+                </div>
               </div>
               <div className="fila-inputs">
                 <div className="input-grupo">
@@ -306,15 +349,15 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
             <div className="ficha-lectura">
               <div className="bloque-ficha">
                 <strong>Salud e Historial Clínico:</strong>
-                {alumno.perfil?.historial_salud ? (
-                  <p className="alerta-salud">{alumno.perfil.historial_salud}</p>
+                {alumno.perfil_alumno?.historial_salud ? (
+                  <p className="alerta-salud">{alumno.perfil_alumno.historial_salud}</p>
                 ) : (
                   <p className="sin-alerta">Sin condiciones de salud registradas.</p>
                 )}
               </div>
               <div className="bloque-ficha">
                 <strong>Objetivos de Entrenamiento:</strong>
-                <p>{alumno.perfil?.objetivos_iniciales || 'No especificados.'}</p>
+                <p>{alumno.perfil_alumno?.objetivos_iniciales || 'No especificados.'}</p>
               </div>
               <button onClick={() => setEditandoFicha(true)} className="btn btn-secundario btn-editar-ficha">
                 ⚙️ Editar Ficha
@@ -331,10 +374,22 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
             <div className="creador-cabecera">
               <h3>Planificador de Rutina Técnica</h3>
               <div className="creador-cabecera-acciones">
-                <button onClick={() => setMostrarCreadorRutina(false)} className="btn btn-secundario">Cerrar</button>
+                <button onClick={() => { setMostrarCreadorRutina(false); setErroresValidacion([]); }} className="btn btn-secundario">Cerrar</button>
                 <button onClick={manejarGuardarRutina} className="btn btn-primario">Guardar y Asignar</button>
               </div>
             </div>
+
+            {/* Errores de Validación */}
+            {erroresValidacion.length > 0 && (
+              <div className="alerta-validacion">
+                <strong>⚠️ Problemas detectados: No se puede guardar la rutina</strong>
+                <ul className="lista-errores-validacion">
+                  {erroresValidacion.map((err, idx) => (
+                    <li key={idx}>{err}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <div className="fila-inputs-rutina">
               <div className="input-grupo flex-2">
@@ -373,83 +428,91 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
                   </div>
 
                   {/* Ejercicios del Día */}
-                  <table className="tabla-ejercicios-creador">
-                    <thead>
-                      <tr>
-                        <th>Ejercicio</th>
-                        <th style={{ width: '80px' }}>Series</th>
-                        <th style={{ width: '100px' }}>Repes</th>
-                        <th style={{ width: '150px' }}>Carga / RPE</th>
-                        <th style={{ width: '100px' }}>Descanso</th>
-                        <th style={{ width: '60px' }}>Acción</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {dia.ejercicios_rutina.map((ej, ejIdx) => (
-                        <tr key={ejIdx}>
-                          <td><strong>{ej.ejercicio_nombre}</strong></td>
-                          <td>
-                            <input
-                              type="number"
-                              className="input-control-tabla"
-                              value={ej.series}
-                              onChange={(e) => cambiarParametroEjercicio(diaIdx, ejIdx, 'series', e.target.value)}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              className="input-control-tabla"
-                              value={ej.repeticiones}
-                              onChange={(e) => cambiarParametroEjercicio(diaIdx, ejIdx, 'repeticiones', e.target.value)}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              className="input-control-tabla"
-                              value={ej.carga_objetivo}
-                              onChange={(e) => cambiarParametroEjercicio(diaIdx, ejIdx, 'carga_objetivo', e.target.value)}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="number"
-                              className="input-control-tabla"
-                              value={ej.descanso_segundos}
-                              onChange={(e) => cambiarParametroEjercicio(diaIdx, ejIdx, 'descanso_segundos', e.target.value)}
-                            />
-                          </td>
-                          <td>
-                            <button
-                              type="button"
-                              onClick={() => eliminarEjercicioDeDia(diaIdx, ejIdx)}
-                              className="btn-eliminar-ej"
-                            >
-                              ✕
-                            </button>
-                          </td>
+                  <div className="tabla-contenedor">
+                    <table className="tabla-ejercicios-creador" style={{ minWidth: '600px' }}>
+                      <thead>
+                        <tr>
+                          <th>Ejercicio</th>
+                          <th style={{ width: '80px' }}>Series</th>
+                          <th style={{ width: '100px' }}>Repes</th>
+                          <th style={{ width: '150px' }}>Carga / RPE</th>
+                          <th style={{ width: '100px' }}>Descanso</th>
+                          <th style={{ width: '60px' }}>Acción</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {dia.ejercicios_rutina.map((ej, ejIdx) => (
+                          <tr key={ejIdx} className={ej.habilitado_actual === false ? 'ej-no-habilitado-fila' : ''}>
+                            <td>
+                              <strong>{ej.ejercicio_nombre}</strong>
+                              {ej.habilitado_actual === false && (
+                                <span className="badge-no-habilitado-prof">⚠️ No habilitado</span>
+                              )}
+                            </td>
+                            <td>
+                              <input
+                                type="number"
+                                className="input-control-tabla"
+                                value={ej.series}
+                                onChange={(e) => cambiarParametroEjercicio(diaIdx, ejIdx, 'series', e.target.value)}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                className="input-control-tabla"
+                                value={ej.repeticiones}
+                                onChange={(e) => cambiarParametroEjercicio(diaIdx, ejIdx, 'repeticiones', e.target.value)}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                className="input-control-tabla"
+                                value={ej.carga_objetivo}
+                                onChange={(e) => cambiarParametroEjercicio(diaIdx, ejIdx, 'carga_objetivo', e.target.value)}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="number"
+                                className="input-control-tabla"
+                                value={ej.descanso_segundos}
+                                onChange={(e) => cambiarParametroEjercicio(diaIdx, ejIdx, 'descanso_segundos', e.target.value)}
+                              />
+                            </td>
+                            <td>
+                              <button
+                                type="button"
+                                onClick={() => eliminarEjercicioDeDia(diaIdx, ejIdx)}
+                                className="btn-eliminar-ej"
+                              >
+                                ✕
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
 
-                  {/* Selector para Agregar Ejercicio */}
-                  <div className="agregar-ejercicio-control">
-                    <select
-                      onChange={(e) => {
-                        if (e.target.value) {
-                          agregarEjercicioADia(diaIdx, e.target.value);
-                          e.target.value = ''; // Resetear
-                        }
-                      }}
-                      className="input-control select-ejercicio"
-                    >
-                      <option value="">+ Agregar Ejercicio al día...</option>
-                      {catalogoEjercicios.map(e => (
-                        <option key={e.id} value={e.id}>{e.nombre} ({e.grupo_muscular})</option>
-                      ))}
-                    </select>
+                    <div className="agregar-ejercicio-control">
+                      <select
+                        onChange={(e) => {
+                          if (e.target.value) {
+                            agregarEjercicioADia(diaIdx, e.target.value);
+                            e.target.value = ''; // Resetear
+                          }
+                        }}
+                        className="input-control select-ejercicio"
+                      >
+                        <option value="">+ Agregar Ejercicio al día...</option>
+                        {catalogoEjercicios
+                          .filter(e => e.activo !== false && (!e.equipamiento || e.equipamiento.disponible !== false))
+                          .map(e => (
+                            <option key={e.id} value={e.id}>{e.nombre} ({e.grupo_muscular})</option>
+                          ))}
+                      </select>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -482,7 +545,8 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
                     repeticiones: e.repeticiones,
                     carga_objetivo: e.carga_objetivo,
                     descanso_segundos: e.descanso_segundos,
-                    orden: e.orden
+                    orden: e.orden,
+                    habilitado_actual: e.habilitado_actual
                   }))
                 })) : [{ nombre_dia: 'Día A', orden: 1, ejercicios_rutina: [] }]);
                 setMostrarCreadorRutina(true);
@@ -510,10 +574,13 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
                         </thead>
                         <tbody>
                           {dia.ejercicios_rutina.map((ej) => (
-                            <tr key={ej.id}>
+                            <tr key={ej.id} className={!ej.habilitado_actual ? 'ej-no-habilitado-fila' : ''}>
                               <td>
                                 <strong>{ej.ejercicio.nombre}</strong>
                                 <span className="grupo-muscular-etiqueta">{ej.ejercicio.grupo_muscular}</span>
+                                {!ej.habilitado_actual && (
+                                  <span className="badge-no-habilitado-prof">⚠️ No habilitado</span>
+                                )}
                               </td>
                               <td>{ej.series}</td>
                               <td>{ej.repeticiones}</td>
@@ -537,7 +604,23 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
         <div className="tarjeta-vidrio">
           <div className="cabecera-bloque-biometria">
             <h3>Seguimiento Biométrico</h3>
-            <button onClick={() => setMostrarModalBiometria(true)} className="btn btn-secundario">
+            <button onClick={() => {
+              if (biometria.length > 0) {
+                const ultima = biometria[biometria.length - 1];
+                setPeso(ultima.peso || '');
+                setAltura(ultima.altura || '');
+                setPorcentajeGrasa(ultima.porcentaje_grasa || '');
+                setPorcentajeMusculo(ultima.porcentaje_musculo || '');
+                setCintura(ultima.cintura || '');
+              } else {
+                setPeso('');
+                setAltura('');
+                setPorcentajeGrasa('');
+                setPorcentajeMusculo('');
+                setCintura('');
+              }
+              setMostrarModalBiometria(true);
+            }} className="btn btn-secundario">
               ⚖️ Nueva Medición
             </button>
           </div>
@@ -593,7 +676,7 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
                     <span className="badge badge-exito">Finalizado</span>
                   </div>
                   {sesion.notas && <p className="notas-sesion-historial"><strong>Nota:</strong> {sesion.notas}</p>}
-                  
+
                   <div className="series-resumen-historial">
                     <h5>Series Ejecutadas:</h5>
                     <div className="grilla-series-historial">
@@ -620,7 +703,7 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
               <h3>Registrar Datos Biométricos</h3>
               <button onClick={() => setMostrarModalBiometria(false)} className="btn-cerrar">✕</button>
             </div>
-            
+
             <form onSubmit={manejarAgregarBiometria}>
               <div className="fila-inputs">
                 <div className="input-grupo">
@@ -708,6 +791,51 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
           margin-bottom: 20px;
         }
 
+        /* Errores de Validación */
+        .alerta-validacion {
+          background: rgba(239, 68, 68, 0.1);
+          border: 1px solid rgba(239, 68, 68, 0.3);
+          border-left: 4px solid var(--color-peligro);
+          padding: 15px;
+          margin-top: 15px;
+          margin-bottom: 20px;
+          border-radius: 6px;
+          color: #fca5a5;
+        }
+
+        .lista-errores-validacion {
+          margin-top: 10px;
+          margin-bottom: 0;
+          padding-left: 20px;
+          font-size: 0.9rem;
+        }
+
+        .lista-errores-validacion li {
+          color: #fca5a5;
+          font-size: 0.9rem;
+        }
+
+        .lista-errores-validacion li {
+          margin-bottom: 4px;
+        }
+
+        /* Ejercicios no habilitados en vista del profesor */
+        .ej-no-habilitado-fila td {
+          opacity: 0.55;
+          background: rgba(239, 68, 68, 0.04);
+        }
+
+        .badge-no-habilitado-prof {
+          display: inline-block;
+          font-size: 0.65rem;
+          background: rgba(239, 68, 68, 0.15);
+          color: #f87171;
+          border-radius: 4px;
+          padding: 2px 6px;
+          margin-left: 8px;
+          vertical-align: middle;
+        }
+
         .perfil-cabecera {
           display: flex;
           flex-direction: column;
@@ -717,7 +845,7 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
 
         .perfil-cabecera-info {
           display: flex;
-          align-items: center;
+          align-items: flex-start;
           gap: 20px;
           border-bottom: 1px solid var(--color-borde);
           padding-bottom: 15px;
@@ -735,6 +863,7 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
           font-size: 0.85rem;
           color: var(--color-texto-secundario);
           margin-top: 6px;
+          flex-wrap: wrap;
         }
 
         .ficha-medica-contenido {
@@ -990,7 +1119,7 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
 
         .grilla-series-historial {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
           gap: 6px;
         }
 
@@ -1010,6 +1139,17 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
         .item-serie-historial .ej-valores {
           color: #34d399;
           font-size: 0.75rem;
+        }
+
+        @media (max-width: 768px) {
+          .fila-inputs {
+            flex-direction: column;
+            gap: 10px;
+          }
+          .fila-inputs-rutina {
+            flex-direction: column;
+            gap: 10px;
+          }
         }
       `}</style>
     </div>

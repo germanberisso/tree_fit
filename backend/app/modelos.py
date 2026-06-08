@@ -65,6 +65,7 @@ class Ejercicio(Base):
     grupo_muscular = Column(String, nullable=False)  # Pecho, Espalda, Piernas, etc.
     video_url = Column(String, nullable=True)
     equipamiento_id = Column(Integer, ForeignKey("equipamientos.id", ondelete="SET NULL"), nullable=True)
+    activo = Column(Boolean, default=True)  # Baja lógica: False = inactivo pero sin borrar historial
 
     # Relaciones
     equipamiento = relationship("Equipamiento", back_populates="ejercicios")

@@ -16,6 +16,7 @@ export const GraficosBiometria = ({ registros }) => {
   // Mapear los nombres amigables de las métricas
   const metricas = [
     { id: 'peso', etiqueta: 'Peso (kg)', color: '#6366f1' },
+    { id: 'altura', etiqueta: 'Altura (cm)', color: '#8b5cf6' },
     { id: 'porcentaje_grasa', etiqueta: 'Grasa (%)', color: '#f59e0b' },
     { id: 'porcentaje_musculo', etiqueta: 'Músculo (%)', color: '#10b981' },
     { id: 'cintura', etiqueta: 'Cintura (cm)', color: '#ef4444' }
@@ -240,6 +241,16 @@ export const GraficosBiometria = ({ registros }) => {
         .selectores-metrica {
           display: flex;
           gap: 6px;
+          overflow-x: auto;
+          width: 100%;
+          padding-bottom: 5px;
+        }
+        .selectores-metrica::-webkit-scrollbar {
+          height: 4px;
+        }
+        .selectores-metrica::-webkit-scrollbar-thumb {
+          background: rgba(255,255,255,0.1);
+          border-radius: 4px;
         }
         .btn-metrica {
           background: rgba(255, 255, 255, 0.03);
@@ -251,6 +262,8 @@ export const GraficosBiometria = ({ registros }) => {
           font-size: 0.8rem;
           font-weight: 600;
           transition: all 0.2s ease;
+          flex-shrink: 0;
+          white-space: nowrap;
         }
         .btn-metrica:hover {
           color: var(--color-texto-principal);

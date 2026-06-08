@@ -4,9 +4,10 @@ from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
 from app.database import obtener_db
-from app.modelos import Usuario, SesionEntrenamiento, SerieEntrenamiento, Rutina, DiaRutina
+from app.modelos import Usuario, SesionEntrenamiento, SerieEntrenamiento, Rutina, DiaRutina, Ejercicio
 from app.esquemas import SesionEntrenamientoCrear, SesionEntrenamientoFinalizar, SesionEntrenamientoRespuesta
 from app.rutas.autenticacion import obtener_usuario_actual
+from app.rutas.validaciones import calcular_estado_ejercicio_rutina
 
 router = APIRouter(prefix="/entrenamientos", tags=["Mi Entrenamiento (Registro Real-Time)"])
 
@@ -104,6 +105,20 @@ def finalizar_entrenamiento(
     try:
         # Registrar las series completadas
         for serie_data in finalizar_in.series:
+            # --- RF8: Validar que el ejercicio sigue habilitado al momento de guardar ---
+            ejercicio = db.query(Ejercicio).filter(Ejercicio.id == serie_data.ejercicio_id).first()
+            if not ejercicio:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"El ejercicio con ID {serie_data.ejercicio_id} no existe."
+                )
+            estado = calcular_estado_ejercicio_rutina(ejercicio)
+            if not estado["habilitado_actual"]:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"No se puede registrar la serie: {estado['motivo_no_habilitado']}"
+                )
+
             nueva_serie = SerieEntrenamiento(
                 sesion_entrenamiento_id=sesion.id,
                 ejercicio_id=serie_data.ejercicio_id,
@@ -117,9 +132,8 @@ def finalizar_entrenamiento(
 
         # Finalizar la sesión
         sesion.fecha_fin = datetime.utcnow()
-        sesion.notes = finalizar_in.notes  # O mapearlo a notas en castellano
-        sesion.notas = finalizar_in.notes
-        
+        sesion.notas = finalizar_in.notas
+
         db.commit()
         db.refresh(sesion)
         return sesion
