@@ -144,3 +144,5 @@ def test_creacion_ejercicio_requiere_autenticacion():
     # 401 Unauthorized
     assert response.status_code == 401 
     assert "No se pudo validar las credenciales" in response.json()["detail"]
+    
+    

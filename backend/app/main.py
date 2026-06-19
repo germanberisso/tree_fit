@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 # from app.crear_db import asegurar_base_datos
 
 # Ejecutar verificación y creación de base de datos en caso de usar PostgreSQL

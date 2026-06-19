@@ -95,84 +95,117 @@ tree_fit/
 ## 3. Configuración e Instalación Local
 
 ### Requisitos Previos
-- Python 3.8 o superior
-- Node.js v18 o superior
 
-### Configuración del Backend
+- **Python:** Versión 3.8 o superior.
+- **Node.js:** Versión v18 o superior (incluyendo el gestor de paquetes `npm`).
+- **Base de Datos:** Motor **PostgreSQL** instalado localmente (v14 o superior) junto con herramientas de administración como pgAdmin 4.
 
-1. Navegar al directorio de backend:
+---
 
-```bash
-cd backend
-```
+### Configuración del Backend (FastAPI)
 
-2. Crear y activar un entorno virtual:
+1. Abra una terminal de comandos e ingrese al directorio del servidor:
 
 ```bash
-python -m venv venv
-# En Windows (CMD/PowerShell):
-venv\Scripts\activate
-# En macOS/Linux o Git Bash:
-source venv/Scripts/activate
+   cd backend
 ```
 
-3. Instalar las dependencias requeridas:
+2. Inicialice el entorno virtual de Python para aislar el árbol de paquetes del proyecto:
 
 ```bash
-pip install -r requirements.txt
+   python -m venv venv
 ```
 
-**Nota para entornos locales sin compilador de C++:**  
-Si la instalación de `psycopg2-binary` falla localmente, puede instalarse el resto de paquetes omitiéndolo, ya que las pruebas locales y el desarrollo por defecto corren sobre SQLite.
+3. Active el entorno virtual según el gestor de consola o sistema operativo que esté utilizando:
 
-4. Configurar el archivo de entorno:  
-Copiar `.env.example` a `.env` y ajustar las variables si es necesario. Por defecto, utilizará SQLite local:
+```bash
+   # En Windows (Git Bash) o Linux/macOS:
+   source venv/Scripts/activate
+
+   # En Windows (PowerShell):
+   .\venv\Scripts\activate
+
+   # En Windows (CMD - Símbolo del Sistema):
+   venv\Scripts\activate
+```
+
+   > **Nota:** Sabrá que se encuentra activo porque visualizará la leyenda `(venv)` al principio de la línea de comandos.
+
+4. Actualice las herramientas base e instale el manifiesto completo de dependencias de la aplicación:
+
+```bash
+   python -m pip install --upgrade pip
+   pip install wheel
+   pip install -r requirements.txt
+```
+
+   > **Nota técnica para Windows:** Si la instalación automatizada del conector `psycopg2-binary` presentara advertencias o requiriera compiladores nativos de C++ externos, puede forzar la descarga de la versión ejecutable binaria precompilada estable mediante:
+   >
+   > ```bash
+   > pip install psycopg2-binary==2.9.3
+   > ```
+
+5. **Habilitación de Persistencia Local Automática:** Antes de inicializar el servidor, abra el archivo `backend/app/main.py` y descomente las líneas encargadas de la verificación de PostgreSQL. El bloque debe quedar activo de la siguiente manera:
+
+```python
+   from app.crear_db import asegurar_base_datos
+
+   # Ejecutar verificación y creación de base de datos en caso de usar PostgreSQL
+   asegurar_base_datos()
+```
+
+6. Configure las variables de entorno locales generando un archivo llamado estrictamente `.env` en la raíz de la carpeta `backend/`:
 
 ```env
-DATABASE_URL=sqlite:///./tree_fit.db
-JWT_SECRET=supersecretjwtkeyforgymmanagementapptreefit2026!
-JWT_ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=1440
+   # Cadena de conexión hacia su motor de PostgreSQL local
+   # Reemplace 'TU_CONTRASENA_REAL' por la clave que utiliza en su pgAdmin
+   DATABASE_URL=postgresql://postgres:TU_CONTRASENA_REAL@localhost:5432/tree_fit
+
+   JWT_SECRET=supersecretjwtkeyforgymmanagementapptreefit2026!
+   JWT_ALGORITHM=HS256
+   ACCESS_TOKEN_EXPIRE_MINUTES=1440
 ```
 
-5. Iniciar el servidor de desarrollo:
+7. Inicie el servidor asincrónico local de desarrollo a través de Uvicorn especificando el puerto `8050`:
 
 ```bash
-uvicorn app.main:app --reload --port 8050
+   uvicorn app.main:app --reload --port 8050
 ```
 
-El backend creará automáticamente el archivo `tree_fit.db` con sus respectivas tablas y sembrará los datos base iniciales de equipamiento y ejercicios.  
-La documentación interactiva (Swagger) estará disponible en:  
+> **Inicialización Automatizada:** Al procesar el arranque por primera vez, el servidor invocará al módulo `asegurar_base_datos()`, creando de forma transparente la base `tree_fit` en su PostgreSQL. El ORM de SQLAlchemy instanciará las 10 tablas relacionales del sistema e invocará a `semilla.py` para sembrar el catálogo inicial de ejercicios y equipamientos de manera atómica.
+
+La documentación interactiva de la API (Swagger) quedará disponible en:
 `http://localhost:8050/docs`
 
-### Configuración del Frontend
+---
 
-1. Abrir una nueva terminal y navegar al directorio de frontend:
+### Configuración del Frontend (React + Vite)
 
-```bash
-cd frontend
-```
-
-2. Instalar los paquetes de Node:
+1. Abra una nueva terminal y navegue hacia el directorio del cliente:
 
 ```bash
-npm install
+   cd frontend
 ```
 
-3. Configurar el archivo de entorno:  
-Copiar `.env.example` a `.env` y verificar que la URL apunte al puerto del backend local:
+2. Realice la descarga e instalación limpia de todos los paquetes y módulos de Node:
+
+```bash
+   npm install
+```
+
+3. Establezca las variables de entorno del cliente generando un archivo `.env` en la raíz de la carpeta `frontend/`:
 
 ```env
-VITE_API_URL=http://localhost:8050/api
+   VITE_API_URL=http://localhost:8050/api
 ```
 
-4. Iniciar la aplicación en modo desarrollo:
+4. Inicie la aplicación web en modo de desarrollo con Hot Module Replacement (HMR):
 
 ```bash
-npm run dev
+   npm run dev
 ```
 
-La aplicación web estará disponible en:  
+El portal interactivo de Tree Fit estará disponible en:
 `http://localhost:5180`
 
 ---
