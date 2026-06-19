@@ -40,6 +40,7 @@ tree_fit/
 │   │   │   ├── ejercicios.py
 │   │   │   ├── entrenamientos.py
 │   │   │   ├── rutinas.py
+│   │   │   ├── estadisticas.py
 │   │   │   └── validaciones.py (Lógica del RF8)
 │   │   ├── config.py
 │   │   ├── database.py
@@ -69,11 +70,12 @@ tree_fit/
     │   ├── pages/
     │   │   ├── alumno/
     │   │   │   ├── EntrenamientoActivo.jsx
-    │   │   │   ├── HistorialEntrenamiento.jsx
+    │   │   │   ├── HistorialEntrenamientos.jsx
     │   │   │   └── ProgresoBiometrico.jsx
     │   │   ├── profesor/
     │   │   │   ├── CatalogoEjercicios.jsx
     │   │   │   ├── DetalleAlumno.jsx
+    │   │   │   ├── EstadisticasProfesor.jsx
     │   │   │   └── ListaAlumnos.jsx
     │   │   ├── Dashboard.jsx
     │   │   ├── Login.jsx

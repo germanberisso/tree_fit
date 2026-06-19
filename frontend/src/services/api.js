@@ -130,6 +130,11 @@ export const api = {
     method: 'DELETE'
   }),
 
+  editarEjercicio: (id, datos) => realizarPeticion(`/ejercicios/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(datos)
+  }),
+
   // Rutinas
   crearRutina: (datosRutina) => realizarPeticion('/rutinas', {
     method: 'POST',
@@ -181,5 +186,10 @@ export const api = {
 
   eliminarRegistroBiometrico: (alumnoId, registroId) => realizarPeticion(`/biometria/${alumnoId}/${registroId}`, {
     method: 'DELETE'
+  }),
+
+  // Estadísticas y KPIs (Profesor)
+  obtenerEstadisticasProfesor: () => realizarPeticion('/estadisticas/profesor', {
+    method: 'GET'
   })
 };

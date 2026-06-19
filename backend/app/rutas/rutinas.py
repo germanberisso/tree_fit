@@ -71,7 +71,7 @@ def _enriquecer_rutina(rutina: Rutina) -> dict:
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
-def crear_y_asignar_rutina(
+async def crear_y_asignar_rutina(
     rutina_in: RutinaCrear,
     db: Session = Depends(obtener_db),
     usuario_actual: Usuario = Depends(obtener_usuario_actual)
@@ -157,7 +157,7 @@ def crear_y_asignar_rutina(
 
 
 @router.get("/alumno/{alumno_id}")
-def obtener_rutinas_alumno(
+async def obtener_rutinas_alumno(
     alumno_id: int,
     db: Session = Depends(obtener_db),
     usuario_actual: Usuario = Depends(obtener_usuario_actual)
@@ -174,7 +174,7 @@ def obtener_rutinas_alumno(
 
 
 @router.get("/activa/{alumno_id}")
-def obtener_rutina_activa(
+async def obtener_rutina_activa(
     alumno_id: int,
     db: Session = Depends(obtener_db),
     usuario_actual: Usuario = Depends(obtener_usuario_actual)
@@ -196,7 +196,7 @@ def obtener_rutina_activa(
 
 
 @router.delete("/{rutina_id}", status_code=status.HTTP_200_OK)
-def eliminar_rutina(
+async def eliminar_rutina(
     rutina_id: int,
     db: Session = Depends(obtener_db),
     usuario_actual: Usuario = Depends(obtener_usuario_actual)

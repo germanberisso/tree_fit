@@ -11,7 +11,7 @@ from app.rutas.autenticacion import obtener_usuario_actual
 router = APIRouter(prefix="/biometria", tags=["Seguimiento Biométrico"])
 
 @router.post("/{alumno_id}", response_model=RegistroBiometricoRespuesta, status_code=status.HTTP_201_CREATED)
-def registrar_biometria(
+async def registrar_biometria(
     alumno_id: int,
     biometria_in: RegistroBiometricoCrear,
     db: Session = Depends(obtener_db),
@@ -81,7 +81,7 @@ def registrar_biometria(
     return nuevo_registro
 
 @router.get("/{alumno_id}", response_model=List[RegistroBiometricoRespuesta])
-def obtener_registros_biometricos(
+async def obtener_registros_biometricos(
     alumno_id: int,
     db: Session = Depends(obtener_db),
     usuario_actual: Usuario = Depends(obtener_usuario_actual)
@@ -109,7 +109,7 @@ def obtener_registros_biometricos(
     return registros
 
 @router.delete("/{alumno_id}/{registro_id}", status_code=status.HTTP_200_OK)
-def eliminar_registro_biometrico(
+async def eliminar_registro_biometrico(
     alumno_id: int,
     registro_id: int,
     db: Session = Depends(obtener_db),

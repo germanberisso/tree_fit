@@ -12,7 +12,7 @@ from app.rutas.validaciones import calcular_estado_ejercicio_rutina
 router = APIRouter(prefix="/entrenamientos", tags=["Mi Entrenamiento (Registro Real-Time)"])
 
 @router.get("/activo", response_model=SesionEntrenamientoRespuesta)
-def obtener_entrenamiento_activo(
+async def obtener_entrenamiento_activo(
     db: Session = Depends(obtener_db),
     usuario_actual: Usuario = Depends(obtener_usuario_actual)
 ):
@@ -37,7 +37,7 @@ def obtener_entrenamiento_activo(
     return sesion
 
 @router.post("/iniciar", response_model=SesionEntrenamientoRespuesta, status_code=status.HTTP_201_CREATED)
-def iniciar_entrenamiento(
+async def iniciar_entrenamiento(
     sesion_in: SesionEntrenamientoCrear,
     db: Session = Depends(obtener_db),
     usuario_actual: Usuario = Depends(obtener_usuario_actual)
@@ -72,7 +72,7 @@ def iniciar_entrenamiento(
     return nueva_sesion
 
 @router.post("/finalizar/{sesion_id}", response_model=SesionEntrenamientoRespuesta)
-def finalizar_entrenamiento(
+async def finalizar_entrenamiento(
     sesion_id: int,
     finalizar_in: SesionEntrenamientoFinalizar,
     db: Session = Depends(obtener_db),
@@ -146,7 +146,7 @@ def finalizar_entrenamiento(
         )
 
 @router.get("/historial/{alumno_id}", response_model=List[SesionEntrenamientoRespuesta])
-def obtener_historial_entrenamientos(
+async def obtener_historial_entrenamientos(
     alumno_id: int,
     db: Session = Depends(obtener_db),
     usuario_actual: Usuario = Depends(obtener_usuario_actual)

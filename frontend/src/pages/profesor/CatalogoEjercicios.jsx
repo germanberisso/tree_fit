@@ -17,6 +17,7 @@ export const CatalogoEjercicios = () => {
   const [formDescEquipo, setFormDescEquipo] = useState('');
   const [formDisponibleEquipo, setFormDisponibleEquipo] = useState(true);
   const [guardandoEquipo, setGuardandoEquipo] = useState(false);
+  const formEquipoRef = React.useRef(null);
 
   // Estado del formulario de ejercicios
   const [mostrarFormEjercicio, setMostrarFormEjercicio] = useState(false);
@@ -27,6 +28,7 @@ export const CatalogoEjercicios = () => {
   const [formVideoEj, setFormVideoEj] = useState('');
   const [formEquipoEj, setFormEquipoEj] = useState('');
   const [guardandoEjercicio, setGuardandoEjercicio] = useState(false);
+  const formEjercicioRef = React.useRef(null);
 
   const cargarDatos = async () => {
     try {
@@ -56,6 +58,7 @@ export const CatalogoEjercicios = () => {
     setFormDescEquipo('');
     setFormDisponibleEquipo(true);
     setMostrarFormEquipo(true);
+    setTimeout(() => formEquipoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
   };
 
   // Abrir formulario para editar equipamiento existente
@@ -65,6 +68,7 @@ export const CatalogoEjercicios = () => {
     setFormDescEquipo(eq.descripcion || '');
     setFormDisponibleEquipo(eq.disponible);
     setMostrarFormEquipo(true);
+    setTimeout(() => formEquipoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
   };
 
   // Guardar (crear o editar) equipamiento
@@ -120,6 +124,7 @@ export const CatalogoEjercicios = () => {
     setFormVideoEj('');
     setFormEquipoEj('');
     setMostrarFormEjercicio(true);
+    setTimeout(() => formEjercicioRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
   };
 
   const abrirEditarEjercicio = (ej) => {
@@ -130,6 +135,7 @@ export const CatalogoEjercicios = () => {
     setFormVideoEj(ej.video_url || '');
     setFormEquipoEj(ej.equipamiento_id ? ej.equipamiento_id.toString() : '');
     setMostrarFormEjercicio(true);
+    setTimeout(() => formEjercicioRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
   };
 
   const guardarEjercicio = async (e) => {
@@ -232,7 +238,7 @@ export const CatalogoEjercicios = () => {
 
             {/* Formulario crear/editar ejercicio */}
             {mostrarFormEjercicio && (
-              <div className="form-equipo-panel tarjeta-vidrio animacion-aparicion">
+              <div className="form-equipo-panel tarjeta-vidrio animacion-aparicion" ref={formEjercicioRef}>
                 <h4>{ejercicioEditando ? 'Editar Ejercicio' : 'Nuevo Ejercicio'}</h4>
                 <form onSubmit={guardarEjercicio}>
                   <div className="controles-busqueda-grilla" style={{marginBottom: '10px'}}>
@@ -348,7 +354,7 @@ export const CatalogoEjercicios = () => {
 
             {/* Formulario crear/editar equipamiento */}
             {mostrarFormEquipo && (
-              <div className="form-equipo-panel tarjeta-vidrio animacion-aparicion">
+              <div className="form-equipo-panel tarjeta-vidrio animacion-aparicion" ref={formEquipoRef}>
                 <h4>{equipoEditando ? 'Editar Equipamiento' : 'Nuevo Equipamiento'}</h4>
                 <form onSubmit={guardarEquipamiento}>
                   <div className="input-grupo">

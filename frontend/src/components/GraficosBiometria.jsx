@@ -15,28 +15,28 @@ export const GraficosBiometria = ({ registros }) => {
 
   // Mapear los nombres amigables de las métricas
   const metricas = [
-    { id: 'peso', etiqueta: 'Peso (kg)', color: '#6366f1' },
-    { id: 'altura', etiqueta: 'Altura (cm)', color: '#8b5cf6' },
-    { id: 'porcentaje_grasa', etiqueta: 'Grasa (%)', color: '#f59e0b' },
-    { id: 'porcentaje_musculo', etiqueta: 'Músculo (%)', color: '#10b981' },
-    { id: 'cintura', etiqueta: 'Cintura (cm)', color: '#ef4444' }
+    { id: 'peso', etiqueta: 'Peso (kg)', etiquetaCorta: 'Peso', color: '#6366f1' },
+    { id: 'altura', etiqueta: 'Altura (cm)', etiquetaCorta: 'Altura', color: '#8b5cf6' },
+    { id: 'porcentaje_grasa', etiqueta: 'Grasa (%)', etiquetaCorta: 'Grasa', color: '#f59e0b' },
+    { id: 'porcentaje_musculo', etiqueta: 'Músculo (%)', etiquetaCorta: 'Músculo', color: '#10b981' },
+    { id: 'cintura', etiqueta: 'Cintura (cm)', etiquetaCorta: 'Cintura', color: '#ef4444' },
+    { id: 'pecho', etiqueta: 'Pecho (cm)', etiquetaCorta: 'Pecho', color: '#ec4899' },
+    { id: 'cadera', etiqueta: 'Cadera (cm)', etiquetaCorta: 'Cadera', color: '#0ea5e9' },
+    { id: 'bicep_izq', etiqueta: 'Bícep Izq (cm)', etiquetaCorta: 'Brazo I.', color: '#84cc16' },
+    { id: 'bicep_der', etiqueta: 'Bícep Der (cm)', etiquetaCorta: 'Brazo D.', color: '#14b8a6' },
+    { id: 'muslo_izq', etiqueta: 'Muslo Izq (cm)', etiquetaCorta: 'Pierna I.', color: '#eab308' },
+    { id: 'muslo_der', etiqueta: 'Muslo Der (cm)', etiquetaCorta: 'Pierna D.', color: '#f97316' }
   ];
 
   // Filtrar los registros que tengan la métrica seleccionada válida
   const datosValidos = registros
     .filter(r => r[metricaSeleccionada] !== undefined && r[metricaSeleccionada] !== null)
     .map(r => ({
-      fecha: new Date(r.fecha_registro).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }),
+      fecha: new Date(`${r.fecha_registro}T12:00:00`).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }),
       valor: r[metricaSeleccionada]
     }));
 
-  if (datosValidos.length === 0) {
-    return (
-      <div className="sin-datos-grafico">
-        <p>No hay registros disponibles para la métrica seleccionada.</p>
-      </div>
-    );
-  }
+
 
   const metricaActualObj = metricas.find(m => m.id === metricaSeleccionada);
   const colorLinea = metricaActualObj ? metricaActualObj.color : '#6366f1';
@@ -101,7 +101,7 @@ export const GraficosBiometria = ({ registros }) => {
               className={`btn-metrica ${metricaSeleccionada === m.id ? 'activo' : ''}`}
               style={{ '--color-accent': m.color }}
             >
-              {m.etiqueta.split(' ')[0]}
+              {m.etiquetaCorta || m.etiqueta.split(' ')[0]}
             </button>
           ))}
         </div>

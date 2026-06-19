@@ -11,6 +11,7 @@ export const Navegacion = ({ vistaActiva, setVistaActiva }) => {
     ? [
         { id: 'alumnos', etiqueta: 'Alumnos', icono: '👥' },
         { id: 'ejercicios', etiqueta: 'Ejercicios', icono: '💪' },
+        { id: 'estadisticas', etiqueta: 'Estadísticas', icono: '📊' },
       ]
     : [
         { id: 'mi_entrenamiento', etiqueta: 'Entrenar', icono: '⚡' },

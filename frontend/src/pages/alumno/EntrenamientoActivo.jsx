@@ -4,7 +4,6 @@ import { createPortal } from 'react-dom';
 import { api } from '../../services/api';
 
 export const EntrenamientoActivo = () => {
-  const { usuario } = { usuario: JSON.parse(localStorage.getItem('tree_fit_user_data') || '{}') }; // Fallback o mock local
   const [rutina, setRutina] = useState(null);
   const [diaSeleccionado, setDiaSeleccionado] = useState(null);
   const [cargando, setCargando] = useState(true);
@@ -51,14 +50,46 @@ export const EntrenamientoActivo = () => {
       }
 
       // Verificar si hay una sesión activa sin finalizar
+      let idSesionActiva = null;
       try {
         const sesion = await api.obtenerEntrenamientoActivo();
         setSesionActiva(sesion);
+        idSesionActiva = sesion.id;
         
         // Reestablecer el dia de rutina si ya estaba activo
         if (sesion.dia_rutina_id && rut) {
           const diaActivo = rut.dias.find(d => d.id === sesion.dia_rutina_id);
-          if (diaActivo) setDiaSeleccionado(diaActivo);
+          if (diaActivo) {
+            setDiaSeleccionado(diaActivo);
+            
+            // Intentar recuperar progreso guardado en LocalStorage
+            const progresoGuardado = localStorage.getItem(`tree_fit_progreso_${sesion.id}`);
+            if (progresoGuardado) {
+              setCargasReales(JSON.parse(progresoGuardado));
+            } else {
+              // Inicializar cargasReales por defecto si no hay guardado
+              const inicialCargas = {};
+              diaActivo.ejercicios_rutina.forEach((ej) => {
+                if (ej.habilitado_actual === false) return;
+
+                inicialCargas[ej.ejercicio_id] = Array.from({ length: ej.series }, (_, index) => {
+                  // Extraer solo el primer número encontrado, ignorando el resto (ej: '70% RPE 8' -> 70)
+                  const matchPeso = ej.carga_objetivo.match(/[0-9.]+/);
+                  const pesoSugerido = matchPeso ? parseFloat(matchPeso[0]) : 0;
+                  
+                  const repeticionesSugeridas = parseInt(ej.repeticiones.split('-')[0]) || 10;
+
+                  return {
+                    numero_serie: index + 1,
+                    repeticiones: repeticionesSugeridas,
+                    peso: pesoSugerido,
+                    completado: false
+                  };
+                });
+              });
+              setCargasReales(inicialCargas);
+            }
+          }
         }
 
         // Calcular el tiempo transcurrido desde que inició (asegurando tratarlo como UTC si falta la Z)
@@ -72,6 +103,21 @@ export const EntrenamientoActivo = () => {
         // No hay sesión activa, normal
         setSesionActiva(null);
       }
+
+      // Limpieza (Garbage Collection): Borrar progresos viejos en LocalStorage
+      // Si el usuario dejó sesiones inconclusas en otros dispositivos,
+      // aquí borramos cualquier dato guardado que no pertenezca a la sesión actual.
+      const keysParaBorrar = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('tree_fit_progreso_')) {
+          const keyId = key.replace('tree_fit_progreso_', '');
+          if (String(keyId) !== String(idSesionActiva)) {
+            keysParaBorrar.push(key);
+          }
+        }
+      }
+      keysParaBorrar.forEach(k => localStorage.removeItem(k));
     } catch (err) {
       console.log('Sin rutina activa cargada:', err.message);
       setRutina(null);
@@ -121,6 +167,13 @@ export const EntrenamientoActivo = () => {
     return () => clearInterval(descansoIntervaloRef.current);
   }, [descansoActivo, tiempoDescanso]);
 
+  // Autoguardado de progreso de series en LocalStorage
+  useEffect(() => {
+    if (sesionActiva && sesionActiva.id && Object.keys(cargasReales).length > 0) {
+      localStorage.setItem(`tree_fit_progreso_${sesionActiva.id}`, JSON.stringify(cargasReales));
+    }
+  }, [cargasReales, sesionActiva]);
+
   const formatearTiempo = (segundos) => {
     const hrs = Math.floor(segundos / 3600);
     const mins = Math.floor((segundos % 3600) / 60);
@@ -147,8 +200,10 @@ export const EntrenamientoActivo = () => {
         if (ej.habilitado_actual === false) return;
 
         inicialCargas[ej.ejercicio_id] = Array.from({ length: ej.series }, (_, index) => {
-          // Extraer número sugerido de la carga objetivo (ej: '20kg' -> 20)
-          const pesoSugerido = parseFloat(ej.carga_objetivo.replace(/[^0-9.]/g, '')) || 10;
+          // Extraer solo el primer número encontrado, ignorando el resto (ej: '70% RPE 8' -> 70)
+          const matchPeso = ej.carga_objetivo.match(/[0-9.]+/);
+          const pesoSugerido = matchPeso ? parseFloat(matchPeso[0]) : 0;
+          
           const repeticionesSugeridas = parseInt(ej.repeticiones.split('-')[0]) || 10;
 
           return {
@@ -235,6 +290,9 @@ export const EntrenamientoActivo = () => {
         series: seriesPayload.length,
         volumenTotal: volumen
       });
+
+      // Limpiar progreso guardado de esta sesión
+      localStorage.removeItem(`tree_fit_progreso_${sesionActiva.id}`);
 
       // Resetear
       setRelojCorriendo(false);
@@ -433,14 +491,19 @@ export const EntrenamientoActivo = () => {
                                 />
                               </td>
                               <td>
-                                <input
-                                  type="number"
-                                  step="0.5"
-                                  className="input-control-serie"
-                                  value={serie.peso}
-                                  onChange={(e) => cambiarValorSerie(ej.ejercicio_id, idx, 'peso', e.target.value)}
-                                  disabled={serie.completado}
-                                />
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <input
+                                    type="number"
+                                    step="0.5"
+                                    className="input-control-serie"
+                                    value={serie.peso}
+                                    onChange={(e) => cambiarValorSerie(ej.ejercicio_id, idx, 'peso', e.target.value)}
+                                    disabled={serie.completado}
+                                  />
+                                  <span style={{ fontSize: '0.75rem', color: 'var(--color-texto-secundario)', whiteSpace: 'nowrap' }}>
+                                    (Sug: {ej.carga_objetivo})
+                                  </span>
+                                </div>
                               </td>
                               <td style={{ textAlign: 'center' }}>
                                 <button

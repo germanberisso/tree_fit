@@ -112,6 +112,14 @@ class EjercicioBase(BaseModel):
 class EjercicioCrear(EjercicioBase):
     pass
 
+class EjercicioActualizar(BaseModel):
+    nombre: Optional[str] = None
+    descripcion: Optional[str] = None
+    grupo_muscular: Optional[str] = None
+    video_url: Optional[str] = None
+    equipamiento_id: Optional[int] = None
+    activo: Optional[bool] = None
+
 class EjercicioRespuesta(EjercicioBase):
     id: int
     activo: bool = True

@@ -168,7 +168,7 @@ class RegistroBiometrico(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     alumno_id = Column(Integer, ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False)
-    fecha_registro = Column(Date, default=datetime.utcnow().date)
+    fecha_registro = Column(Date, default=lambda: datetime.utcnow().date())
     
     # Composición corporal básica
     peso = Column(Float, nullable=False)  # en kg

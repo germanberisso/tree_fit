@@ -11,7 +11,7 @@ from app.seguridad import obtener_clave_hash
 router = APIRouter(prefix="/alumnos", tags=["Gestión de Alumnos"])
 
 @router.get("", response_model=List[DetalleAlumnoCompleto])
-def listar_alumnos(
+async def listar_alumnos(
     db: Session = Depends(obtener_db),
     usuario_actual: Usuario = Depends(obtener_usuario_actual)
 ):
@@ -29,7 +29,7 @@ def listar_alumnos(
     return alumnos
 
 @router.post("", response_model=DetalleAlumnoCompleto, status_code=status.HTTP_201_CREATED)
-def crear_alumno(
+async def crear_alumno(
     alumno_in: UsuarioCrear,
     db: Session = Depends(obtener_db),
     usuario_actual: Usuario = Depends(obtener_usuario_actual)
@@ -78,7 +78,7 @@ def crear_alumno(
     return nuevo_alumno
 
 @router.post("/vincular", response_model=DetalleAlumnoCompleto, status_code=status.HTTP_200_OK)
-def vincular_alumno(
+async def vincular_alumno(
     vincular_in: VincularAlumno,
     db: Session = Depends(obtener_db),
     usuario_actual: Usuario = Depends(obtener_usuario_actual)
@@ -109,7 +109,7 @@ def vincular_alumno(
     return alumno
 
 @router.get("/{alumno_id}", response_model=DetalleAlumnoCompleto)
-def obtener_detalle_alumno(
+async def obtener_detalle_alumno(
     alumno_id: int,
     db: Session = Depends(obtener_db),
     usuario_actual: Usuario = Depends(obtener_usuario_actual)
@@ -135,7 +135,7 @@ def obtener_detalle_alumno(
     return alumno
 
 @router.put("/{alumno_id}", response_model=PerfilAlumnoRespuesta)
-def modificar_perfil_alumno(
+async def modificar_perfil_alumno(
     alumno_id: int,
     perfil_in: PerfilAlumnoCrear,
     db: Session = Depends(obtener_db),
@@ -174,7 +174,7 @@ def modificar_perfil_alumno(
     return perfil
 
 @router.delete("/{alumno_id}", status_code=status.HTTP_200_OK)
-def dar_de_baja_alumno(
+async def dar_de_baja_alumno(
     alumno_id: int,
     db: Session = Depends(obtener_db),
     usuario_actual: Usuario = Depends(obtener_usuario_actual)

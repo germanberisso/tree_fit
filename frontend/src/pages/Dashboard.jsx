@@ -7,6 +7,7 @@ import { Navegacion } from '../components/Navegacion';
 import { ListaAlumnos } from './profesor/ListaAlumnos';
 import { DetalleAlumno } from './profesor/DetalleAlumno';
 import { CatalogoEjercicios } from './profesor/CatalogoEjercicios';
+import { EstadisticasProfesor } from './profesor/EstadisticasProfesor';
 
 // Subvistas de Alumnos
 import { EntrenamientoActivo } from './alumno/EntrenamientoActivo';
@@ -43,6 +44,8 @@ export const Dashboard = () => {
         return <ListaAlumnos seleccionarAlumno={setAlumnoSeleccionadoId} />;
       case 'ejercicios':
         return <CatalogoEjercicios />;
+      case 'estadisticas':
+        return <EstadisticasProfesor />;
       default:
         return <ListaAlumnos seleccionarAlumno={setAlumnoSeleccionadoId} />;
     }

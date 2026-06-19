@@ -5,7 +5,7 @@ from typing import List, Optional
 from app.database import obtener_db
 from app.modelos import Ejercicio, Equipamiento, EjercicioRutina, SerieEntrenamiento, Usuario
 from app.esquemas import (
-    EjercicioRespuesta, EjercicioCrear,
+    EjercicioRespuesta, EjercicioCrear, EjercicioActualizar,
     EquipamientoRespuesta, EquipamientoCrear, EquipamientoActualizar
 )
 from app.rutas.autenticacion import obtener_usuario_actual
@@ -18,7 +18,7 @@ router = APIRouter(tags=["Catálogo de Ejercicios y Equipamiento"])
 # ---------------------------------------------------------------------------
 
 @router.get("/equipamiento", response_model=List[EquipamientoRespuesta])
-def listar_equipamiento(
+async def listar_equipamiento(
     db: Session = Depends(obtener_db),
     usuario_actual: Usuario = Depends(obtener_usuario_actual)
 ):
@@ -27,7 +27,7 @@ def listar_equipamiento(
 
 
 @router.post("/equipamiento", response_model=EquipamientoRespuesta, status_code=status.HTTP_201_CREATED)
-def crear_equipamiento(
+async def crear_equipamiento(
     equipo_in: EquipamientoCrear,
     db: Session = Depends(obtener_db),
     usuario_actual: Usuario = Depends(obtener_usuario_actual)
@@ -52,7 +52,7 @@ def crear_equipamiento(
 
 
 @router.put("/equipamiento/{equipamiento_id}", response_model=EquipamientoRespuesta)
-def editar_equipamiento(
+async def editar_equipamiento(
     equipamiento_id: int,
     equipo_in: EquipamientoActualizar,
     db: Session = Depends(obtener_db),
@@ -79,7 +79,7 @@ def editar_equipamiento(
 
 
 @router.patch("/equipamiento/{equipamiento_id}/disponibilidad", response_model=EquipamientoRespuesta)
-def cambiar_disponibilidad_equipamiento(
+async def cambiar_disponibilidad_equipamiento(
     equipamiento_id: int,
     disponible: bool,
     db: Session = Depends(obtener_db),
@@ -104,7 +104,7 @@ def cambiar_disponibilidad_equipamiento(
 # ---------------------------------------------------------------------------
 
 @router.get("/ejercicios", response_model=List[EjercicioRespuesta])
-def listar_ejercicios(
+async def listar_ejercicios(
     grupo_muscular: Optional[str] = None,
     busqueda: Optional[str] = None,
     solo_activos: Optional[bool] = None,
@@ -130,7 +130,7 @@ def listar_ejercicios(
 
 
 @router.post("/ejercicios", response_model=EjercicioRespuesta, status_code=status.HTTP_201_CREATED)
-def crear_ejercicio(
+async def crear_ejercicio(
     ejercicio_in: EjercicioCrear,
     db: Session = Depends(obtener_db),
     usuario_actual: Usuario = Depends(obtener_usuario_actual)
@@ -158,7 +158,7 @@ def crear_ejercicio(
 
 
 @router.delete("/ejercicios/{ejercicio_id}", status_code=status.HTTP_200_OK)
-def eliminar_ejercicio(
+async def eliminar_ejercicio(
     ejercicio_id: int,
     db: Session = Depends(obtener_db),
     usuario_actual: Usuario = Depends(obtener_usuario_actual)
@@ -188,3 +188,40 @@ def eliminar_ejercicio(
         db.delete(ejercicio)
         db.commit()
         return {"mensaje": "El ejercicio fue eliminado permanentemente del catálogo."}
+
+
+@router.put("/ejercicios/{ejercicio_id}", response_model=EjercicioRespuesta)
+async def editar_ejercicio(
+    ejercicio_id: int,
+    ejercicio_in: EjercicioActualizar,
+    db: Session = Depends(obtener_db),
+    usuario_actual: Usuario = Depends(obtener_usuario_actual)
+):
+    """Edita los datos de un ejercicio existente en el catálogo. Solo profesores."""
+    if usuario_actual.rol != "profesor":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Solo los profesores pueden editar ejercicios.")
+
+    ejercicio = db.query(Ejercicio).filter(Ejercicio.id == ejercicio_id).first()
+    if not ejercicio:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Ejercicio no encontrado.")
+
+    if ejercicio_in.nombre is not None:
+        # Verificar que no exista otro ejercicio con el mismo nombre
+        existe = db.query(Ejercicio).filter(Ejercicio.nombre == ejercicio_in.nombre, Ejercicio.id != ejercicio_id).first()
+        if existe:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Ya existe otro ejercicio con ese nombre.")
+        ejercicio.nombre = ejercicio_in.nombre
+    if ejercicio_in.descripcion is not None:
+        ejercicio.descripcion = ejercicio_in.descripcion
+    if ejercicio_in.grupo_muscular is not None:
+        ejercicio.grupo_muscular = ejercicio_in.grupo_muscular
+    if ejercicio_in.video_url is not None:
+        ejercicio.video_url = ejercicio_in.video_url
+    if ejercicio_in.equipamiento_id is not None:
+        ejercicio.equipamiento_id = ejercicio_in.equipamiento_id if ejercicio_in.equipamiento_id != 0 else None
+    if ejercicio_in.activo is not None:
+        ejercicio.activo = ejercicio_in.activo
+
+    db.commit()
+    db.refresh(ejercicio)
+    return ejercicio

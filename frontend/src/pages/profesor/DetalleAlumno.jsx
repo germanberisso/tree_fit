@@ -32,7 +32,16 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
   const [altura, setAltura] = useState('');
   const [porcentajeGrasa, setPorcentajeGrasa] = useState('');
   const [porcentajeMusculo, setPorcentajeMusculo] = useState('');
+  
+  // Perímetros detallados
   const [cintura, setCintura] = useState('');
+  const [pecho, setPecho] = useState('');
+  const [cadera, setCadera] = useState('');
+  const [bicepIzq, setBicepIzq] = useState('');
+  const [bicepDer, setBicepDer] = useState('');
+  const [musloIzq, setMusloIzq] = useState('');
+  const [musloDer, setMusloDer] = useState('');
+  const [mostrarPerimetros, setMostrarPerimetros] = useState(false);
 
   // Estados para el Creador de Rutinas
   const [mostrarCreadorRutina, setMostrarCreadorRutina] = useState(false);
@@ -119,7 +128,13 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
         altura: parseFloat(altura),
         porcentaje_grasa: porcentajeGrasa ? parseFloat(porcentajeGrasa) : null,
         porcentaje_musculo: porcentajeMusculo ? parseFloat(porcentajeMusculo) : null,
-        cintura: cintura ? parseFloat(cintura) : null
+        cintura: cintura ? parseFloat(cintura) : null,
+        pecho: pecho ? parseFloat(pecho) : null,
+        cadera: cadera ? parseFloat(cadera) : null,
+        bicep_izq: bicepIzq ? parseFloat(bicepIzq) : null,
+        bicep_der: bicepDer ? parseFloat(bicepDer) : null,
+        muslo_izq: musloIzq ? parseFloat(musloIzq) : null,
+        muslo_der: musloDer ? parseFloat(musloDer) : null
       });
       setMostrarModalBiometria(false);
       setPeso('');
@@ -127,6 +142,12 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
       setPorcentajeGrasa('');
       setPorcentajeMusculo('');
       setCintura('');
+      setPecho('');
+      setCadera('');
+      setBicepIzq('');
+      setBicepDer('');
+      setMusloIzq('');
+      setMusloDer('');
       cargarDatos();
     } catch (err) {
       alert('Error al registrar medidas: ' + err.message);
@@ -612,12 +633,24 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
                 setPorcentajeGrasa(ultima.porcentaje_grasa || '');
                 setPorcentajeMusculo(ultima.porcentaje_musculo || '');
                 setCintura(ultima.cintura || '');
+                setPecho(ultima.pecho || '');
+                setCadera(ultima.cadera || '');
+                setBicepIzq(ultima.bicep_izq || '');
+                setBicepDer(ultima.bicep_der || '');
+                setMusloIzq(ultima.muslo_izq || '');
+                setMusloDer(ultima.muslo_der || '');
               } else {
                 setPeso('');
                 setAltura('');
                 setPorcentajeGrasa('');
                 setPorcentajeMusculo('');
                 setCintura('');
+                setPecho('');
+                setCadera('');
+                setBicepIzq('');
+                setBicepDer('');
+                setMusloIzq('');
+                setMusloDer('');
               }
               setMostrarModalBiometria(true);
             }} className="btn btn-secundario">
@@ -637,7 +670,7 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
                     <th>Altura</th>
                     <th>% Grasa</th>
                     <th>% Músculo</th>
-                    <th>Cintura</th>
+                    <th>Perímetros</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -648,7 +681,21 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
                       <td>{reg.altura} cm</td>
                       <td>{reg.porcentaje_grasa ? `${reg.porcentaje_grasa}%` : '-'}</td>
                       <td>{reg.porcentaje_musculo ? `${reg.porcentaje_musculo}%` : '-'}</td>
-                      <td>{reg.cintura ? `${reg.cintura} cm` : '-'}</td>
+                      <td>
+                        <div className="tooltip-contenedor">
+                          <span className="icono-perimetros">📏 Ver</span>
+                          <div className="tooltip-texto">
+                            {reg.cintura ? `Cintura: ${reg.cintura} cm` : ''}
+                            {reg.pecho ? `\nPecho: ${reg.pecho} cm` : ''}
+                            {reg.cadera ? `\nCadera: ${reg.cadera} cm` : ''}
+                            {reg.bicep_izq ? `\nBrazo I: ${reg.bicep_izq} cm` : ''}
+                            {reg.bicep_der ? `\nBrazo D: ${reg.bicep_der} cm` : ''}
+                            {reg.muslo_izq ? `\nPierna I: ${reg.muslo_izq} cm` : ''}
+                            {reg.muslo_der ? `\nPierna D: ${reg.muslo_der} cm` : ''}
+                            {!reg.cintura && !reg.pecho && !reg.cadera && !reg.bicep_izq && !reg.bicep_der && !reg.muslo_izq && !reg.muslo_der && 'Sin datos registrados'}
+                          </div>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -756,16 +803,101 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
                 </div>
               </div>
 
-              <div className="input-grupo">
-                <label>Perímetro de Cintura (cm)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  className="input-control"
-                  placeholder="82"
-                  value={cintura}
-                  onChange={(e) => setCintura(e.target.value)}
-                />
+              {/* Accordion de Perímetros Detallados */}
+              <div className="accordion-perimetros">
+                <button 
+                  type="button" 
+                  className="btn-accordion"
+                  onClick={() => setMostrarPerimetros(!mostrarPerimetros)}
+                >
+                  <span>{mostrarPerimetros ? '▼' : '▶'} Perímetros Detallados (Opcionales)</span>
+                </button>
+                
+                {mostrarPerimetros && (
+                  <div className="contenido-accordion animacion-aparicion">
+                    <div className="input-grupo">
+                      <label>Cintura (cm)</label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        className="input-control"
+                        placeholder="Ej: 84"
+                        value={cintura}
+                        onChange={(e) => setCintura(e.target.value)}
+                      />
+                    </div>
+                    <div className="input-grupo">
+                      <label>Pecho (cm)</label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        className="input-control"
+                        placeholder="Ej: 105"
+                        value={pecho}
+                        onChange={(e) => setPecho(e.target.value)}
+                      />
+                    </div>
+                    <div className="input-grupo">
+                      <label>Cadera (cm)</label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        className="input-control"
+                        placeholder="Ej: 90"
+                        value={cadera}
+                        onChange={(e) => setCadera(e.target.value)}
+                      />
+                    </div>
+                    <div className="fila-inputs">
+                      <div className="input-grupo flex-1">
+                        <label>Bícep Izq. (cm)</label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          className="input-control"
+                          placeholder="Ej: 35"
+                          value={bicepIzq}
+                          onChange={(e) => setBicepIzq(e.target.value)}
+                        />
+                      </div>
+                      <div className="input-grupo flex-1">
+                        <label>Bícep Der. (cm)</label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          className="input-control"
+                          placeholder="Ej: 35.5"
+                          value={bicepDer}
+                          onChange={(e) => setBicepDer(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <div className="fila-inputs">
+                      <div className="input-grupo flex-1">
+                        <label>Muslo Izq. (cm)</label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          className="input-control"
+                          placeholder="Ej: 60"
+                          value={musloIzq}
+                          onChange={(e) => setMusloIzq(e.target.value)}
+                        />
+                      </div>
+                      <div className="input-grupo flex-1">
+                        <label>Muslo Der. (cm)</label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          className="input-control"
+                          placeholder="Ej: 60.5"
+                          value={musloDer}
+                          onChange={(e) => setMusloDer(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="modal-acciones">
@@ -1150,6 +1282,82 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
             flex-direction: column;
             gap: 10px;
           }
+        }
+
+        .accordion-perimetros {
+          margin-top: 15px;
+          margin-bottom: 15px;
+          border: 1px solid var(--color-borde);
+          border-radius: var(--radio-esquina);
+          overflow: hidden;
+        }
+
+        .btn-accordion {
+          width: 100%;
+          background: rgba(255, 255, 255, 0.03);
+          border: none;
+          padding: 12px 15px;
+          text-align: left;
+          color: #a5b4fc;
+          font-weight: 600;
+          cursor: pointer;
+          font-size: 0.9rem;
+          transition: background 0.2s;
+        }
+
+        .btn-accordion:hover {
+          background: rgba(255, 255, 255, 0.08);
+        }
+
+        .contenido-accordion {
+          padding: 15px;
+          background: rgba(0, 0, 0, 0.2);
+          border-top: 1px solid var(--color-borde);
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .tooltip-contenedor {
+          position: relative;
+          display: inline-block;
+          cursor: help;
+        }
+
+        .icono-perimetros {
+          background: rgba(255,255,255,0.05);
+          padding: 4px 8px;
+          border-radius: 12px;
+          font-size: 0.85rem;
+          color: #a5b4fc;
+        }
+
+        .tooltip-texto {
+          visibility: hidden;
+          width: 160px;
+          background-color: rgba(13, 17, 28, 0.95);
+          color: #fff;
+          text-align: left;
+          border-radius: 8px;
+          padding: 10px;
+          position: absolute;
+          z-index: 10;
+          top: 50%;
+          right: 100%;
+          transform: translateY(-50%);
+          margin-right: 10px;
+          opacity: 0;
+          transition: opacity 0.3s;
+          border: 1px solid var(--color-borde);
+          box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+          white-space: pre-line;
+          font-size: 0.8rem;
+          line-height: 1.4;
+        }
+
+        .tooltip-contenedor:hover .tooltip-texto {
+          visibility: visible;
+          opacity: 1;
         }
       `}</style>
     </div>

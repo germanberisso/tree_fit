@@ -9,7 +9,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import engine, Base, SessionLocal
 from app.semilla import sembrar_datos
-from app.rutas import autenticacion, alumnos, ejercicios, rutinas, entrenamientos, biometria
+from app.rutas import autenticacion, alumnos, ejercicios, rutinas, entrenamientos, biometria, estadisticas
+from app.config import settings
 
 # Crear las tablas de la base de datos si no existen
 Base.metadata.create_all(bind=engine)
@@ -29,10 +30,11 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Configurar middleware de CORS para permitir peticiones del frontend (React)
+# Configurar middleware de CORS (orígenes configurables por variable de entorno)
+origenes_permitidos = [o.strip() for o in settings.CORS_ORIGINS.split(",")]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # En producción, restringir al dominio del frontend
+    allow_origins=origenes_permitidos,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -45,9 +47,10 @@ app.include_router(ejercicios.router, prefix="/api")
 app.include_router(rutinas.router, prefix="/api")
 app.include_router(entrenamientos.router, prefix="/api")
 app.include_router(biometria.router, prefix="/api")
+app.include_router(estadisticas.router, prefix="/api")
 
 @app.get("/")
-def check_salud():
+async def check_salud():
     """Endpoint de control de estado del servidor."""
     return {
         "estado": "activo",
@@ -56,6 +59,6 @@ def check_salud():
     }
 
 @app.get("/api/health")
-def health_check():
+async def health_check():
     """Endpoint liviano para health checks y pings externos."""
     return {"status": "ok"}
