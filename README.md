@@ -1,6 +1,6 @@
-# Tree Fit - Sistema de Gestión de Entrenamiento Integral
+# TreeFit - Sistema de Gestión de Entrenamiento Integral
 
-Tree Fit es una plataforma web cliente-servidor responsiva diseñada para digitalizar, centralizar y optimizar la interacción técnica y el seguimiento operativo entre profesores de educación física (personal trainers) y alumnos en entornos de musculación.
+TreeFit es una plataforma web cliente-servidor responsiva diseñada para digitalizar, centralizar y optimizar la interacción técnica y el seguimiento operativo entre profesores de educación física (personal trainers) y alumnos en entornos de musculación.
 
 El sistema elimina las planificaciones analógicas en papel, mitiga la pérdida de datos históricos y provee herramientas avanzadas de analítica biométrica y control de inventario en tiempo real (Validación de Recursos - RF8).
 
@@ -205,7 +205,7 @@ La documentación interactiva de la API (Swagger) quedará disponible en:
    npm run dev
 ```
 
-El portal interactivo de Tree Fit estará disponible en:
+El portal interactivo de TreeFit estará disponible en:
 `http://localhost:5180`
 
 ---
