@@ -16,39 +16,45 @@ export const Navegacion = ({ vistaActiva, setVistaActiva }) => {
 
   const itemsNavegacion = esProfesor
     ? [
-        {
-          id: "alumnos",
-          etiqueta: "Alumnos",
-          icono: (
-            <img src={peopleIcon} alt="Alumnos" className="link-icono-img" />
-          ),
-        },
-        {
-          id: "ejercicios",
-          etiqueta: "Ejercicios",
-          icono: (
-            <img src={gymIcon} alt="Ejercicios" className="link-icono-img" />
-          ),
-        },
-        {
-          id: "estadisticas",
-          etiqueta: "Estadísticas",
-          icono: (
-            <img src={statisticsIcon} alt="Estadísticas" className="link-icono-img" />
-          ),
-        },
-      ]
+      {
+        id: "alumnos",
+        etiqueta: "Alumnos",
+        icono: (
+          <img src={peopleIcon} alt="Alumnos" className="link-icono-img" />
+        ),
+      },
+      {
+        id: "ejercicios",
+        etiqueta: "Ejercicios",
+        icono: (
+          <img src={gymIcon} alt="Ejercicios" className="link-icono-img" />
+        ),
+      },
+      {
+        id: "estadisticas",
+        etiqueta: "Estadísticas",
+        icono: (
+          <img src={statisticsIcon} alt="Estadísticas" className="link-icono-img" />
+        ),
+      },
+    ]
     : [
-        { id: "mi_entrenamiento", etiqueta: "Entrenar", icono: (
-            <img src={thunderIcon} alt="Historial" className="link-icono-img" />
-          ), },
-        { id: "historial", etiqueta: "Historial", icono: (
-            <img src={dateIcon} alt="Historial" className="link-icono-img" />
-          ), },
-        { id: "biometria", etiqueta: "Biometría", icono: (
-            <img src={statisticsIcon} alt="Estadísticas" className="link-icono-img" />
-          ), },
-      ];
+      {
+        id: "mi_entrenamiento", etiqueta: "Entrenar", icono: (
+          <img src={thunderIcon} alt="Historial" className="link-icono-img" />
+        ),
+      },
+      {
+        id: "historial", etiqueta: "Historial", icono: (
+          <img src={dateIcon} alt="Historial" className="link-icono-img" />
+        ),
+      },
+      {
+        id: "biometria", etiqueta: "Biometría", icono: (
+          <img src={statisticsIcon} alt="Estadísticas" className="link-icono-img" />
+        ),
+      },
+    ];
 
   return (
     <>
@@ -88,7 +94,7 @@ export const Navegacion = ({ vistaActiva, setVistaActiva }) => {
               onClick={() => setVistaActiva(item.id)}
               className={`sidebar-link ${vistaActiva === item.id ? "activo" : ""}`}
             >
-              <span className="link-icono">{item.icono}</span>
+              {item.icono}
               <span className="link-texto">{item.etiqueta}</span>
             </button>
           ))}
@@ -96,7 +102,7 @@ export const Navegacion = ({ vistaActiva, setVistaActiva }) => {
 
         <div className="sidebar-pie">
           <button onClick={logout} className="btn btn-secundario boton-logout">
-            <span><img src={sessionLeaveIcon} alt="Cerrar Sesión" className="link-icono-img" /></span> Cerrar Sesión
+            <img src={sessionLeaveIcon} alt="Cerrar Sesión" className="link-icono-img" /> Cerrar Sesión
           </button>
         </div>
       </aside>
@@ -213,13 +219,9 @@ export const Navegacion = ({ vistaActiva, setVistaActiva }) => {
           border-left: 3px solid var(--color-primario);
         }
 
-        .link-icono {
-          font-size: 1.2rem;
-        }
-
         .link-icono-img {
-          width: 1.8rem;
-          height: 1.8rem;
+          width: 2rem;
+          height: 2rem;
         }
 
         .boton-logout {

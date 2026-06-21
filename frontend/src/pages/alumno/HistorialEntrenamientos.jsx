@@ -70,12 +70,12 @@ export const HistorialEntrenamientos = () => {
                     {duracionMins >= 0 && <span className="duracion"><img
                       src={timeIcon}
                       alt="Tiempo"
-                      className="link-icono-img"
+                      className="icono-metrica-pequeno"
                     /> {duracionMins} min</span>}
                     <span className="volumen"><img
                       src={weightIcon}
                       alt="Peso"
-                      className="link-icono-img"
+                      className="icono-metrica-pequeno"
                     /> {volumenTotal} kg levantados</span>
                   </div>
                 </div>
@@ -174,7 +174,7 @@ export const HistorialEntrenamientos = () => {
           border-radius: 6px;
         }
 
-        .link-icono-img {
+        .icono-metrica-pequeno {
           width: 1rem;
           height: 1rem;
         }

@@ -367,7 +367,7 @@ export const EntrenamientoActivo = () => {
             <img
               src={timeIcon}
               alt="Tiempo"
-              className="link-icono-img"
+              className="icono-metrica-grande"
             />
             <span className="tiempo-reloj">{formatearTiempo(tiempoTranscurrido)}</span>
           </div>
@@ -593,7 +593,7 @@ export const EntrenamientoActivo = () => {
           color: #a5b4fc;
         }
 
-        .link-icono-img {
+        .icono-metrica-grande {
           width: 2em;
           height: 2em;
         }
