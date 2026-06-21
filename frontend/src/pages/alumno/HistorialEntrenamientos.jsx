@@ -38,7 +38,6 @@ export const HistorialEntrenamientos = () => {
         <div className="alerta-error">{error}</div>
       ) : historial.length === 0 ? (
         <div className="tarjeta-vidrio sin-sesiones-al">
-          <span style={{ fontSize: '3rem' }}>🗓️</span>
           <h3>Aún no has registrado entrenamientos</h3>
           <p>Tus entrenamientos finalizados aparecerán aquí una vez que inicies y completes tu primera sesión.</p>
         </div>
@@ -66,8 +65,16 @@ export const HistorialEntrenamientos = () => {
                   </div>
                   
                   <div className="metrica-rapida-sesion">
-                    {duracionMins && <span className="duracion">⏱️ {duracionMins} min</span>}
-                    <span className="volumen">🏋️ {volumenTotal} kg levantados</span>
+                    {duracionMins && <span className="duracion"><img
+                      src="/src/assets/time.svg"
+                      alt="Tiempo"
+                      className="link-icono-img"
+                    /> {duracionMins} min</span>}
+                    <span className="volumen"><img
+                      src="/src/assets/weight.svg"
+                      alt="Peso"
+                      className="link-icono-img"
+                    /> {volumenTotal} kg levantados</span>
                   </div>
                 </div>
 
@@ -160,6 +167,11 @@ export const HistorialEntrenamientos = () => {
           background: rgba(99, 102, 241, 0.1);
           padding: 4px 10px;
           border-radius: 6px;
+        }
+
+        .link-icono-img {
+          width: 1rem;
+          height: 1rem;
         }
 
         .metrica-rapida-sesion .volumen {

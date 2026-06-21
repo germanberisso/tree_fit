@@ -361,3 +361,8 @@ button, input, select, textarea {
   border-top: 1px solid var(--color-borde);
   padding-top: 15px;
 }
+
+.logo {
+  width: 10em;
+  height: 6em;
+}

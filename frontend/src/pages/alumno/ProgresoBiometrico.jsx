@@ -316,7 +316,7 @@ export const ProgresoBiometrico = () => {
                         <td>{reg.porcentaje_musculo ? `${reg.porcentaje_musculo}%` : '-'}</td>
                         <td>
                           <div className="tooltip-contenedor">
-                            <span className="icono-perimetros">📏 Ver</span>
+                            <span className="icono-perimetros">Ver</span>
                             <div className="tooltip-texto">
                               {reg.cintura ? `Cintura: ${reg.cintura} cm` : ''}
                               {reg.pecho ? `\nPecho: ${reg.pecho} cm` : ''}

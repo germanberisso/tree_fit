@@ -1,6 +1,6 @@
 // Contexto de Autenticación de Tree Fit
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { api } from '../services/api';
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { api } from "../services/api";
 
 const AuthContext = createContext(null);
 
@@ -12,14 +12,14 @@ export const AuthProvider = ({ children }) => {
   // Intentar restaurar la sesión al montar el componente
   useEffect(() => {
     const restaurarSesion = async () => {
-      const token = localStorage.getItem('tree_fit_token');
+      const token = localStorage.getItem("tree_fit_token");
       if (token) {
         try {
           const perfil = await api.obtenerPerfil();
           setUsuario(perfil);
         } catch (err) {
           console.error("No se pudo restaurar la sesión:", err);
-          localStorage.removeItem('tree_fit_token');
+          localStorage.removeItem("tree_fit_token");
           setUsuario(null);
         }
       }
@@ -35,13 +35,13 @@ export const AuthProvider = ({ children }) => {
     setCargando(true);
     try {
       const datos = await api.login(email, clave);
-      localStorage.setItem('tree_fit_token', datos.token_acceso);
+      localStorage.setItem("tree_fit_token", datos.token_acceso);
       const perfil = await api.obtenerPerfil();
       setUsuario(perfil);
       setCargando(false);
       return perfil;
     } catch (err) {
-      setError(err.message || 'Error al iniciar sesión.');
+      setError(err.message || "Error al iniciar sesión.");
       setCargando(false);
       throw err;
     }
@@ -50,21 +50,23 @@ export const AuthProvider = ({ children }) => {
   // Función para registrarse
   const registrar = async (email, clave, nombreCompleto, rol) => {
     setError(null);
-    setCargando(true);
     try {
-      const nuevoUsuario = await api.registro({ email, clave, nombre_completo: nombreCompleto, rol });
-      setCargando(false);
+      const nuevoUsuario = await api.registro({
+        email,
+        clave,
+        nombre_completo: nombreCompleto,
+        rol,
+      });
       return nuevoUsuario;
     } catch (err) {
-      setError(err.message || 'Error en el registro.');
-      setCargando(false);
+      setError(err.message || "Error en el registro.");
       throw err;
     }
   };
 
   // Cerrar sesión
   const logout = () => {
-    localStorage.removeItem('tree_fit_token');
+    localStorage.removeItem("tree_fit_token");
     setUsuario(null);
     setError(null);
   };
@@ -76,8 +78,8 @@ export const AuthProvider = ({ children }) => {
     login,
     registrar,
     logout,
-    esProfesor: usuario?.rol === 'profesor',
-    esAlumno: usuario?.rol === 'alumno'
+    esProfesor: usuario?.rol === "profesor",
+    esAlumno: usuario?.rol === "alumno",
   };
 
   return <AuthContext.Provider value={valor}>{children}</AuthContext.Provider>;
@@ -87,7 +89,7 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => {
   const contexto = useContext(AuthContext);
   if (!contexto) {
-    throw new Error('useAuth debe usarse dentro de un AuthProvider');
+    throw new Error("useAuth debe usarse dentro de un AuthProvider");
   }
   return contexto;
 };

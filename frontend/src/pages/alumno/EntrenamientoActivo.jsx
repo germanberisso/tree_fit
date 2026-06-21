@@ -310,30 +310,26 @@ export const EntrenamientoActivo = () => {
     return (
       <div className="resumen-exito-contenedor animacion-aparicion">
         <div className="tarjeta-vidrio resumen-exito-tarjeta">
-          <span className="exito-emoji">🏆</span>
           <h2>¡Entrenamiento Registrado!</h2>
           <p className="resumen-frase">Excelente trabajo. Cada gota de sudor cuenta.</p>
           
           <div className="metricas-resumen-grilla">
-            <div className="tarjeta-metrica-resumen">
-              <span className="icono">⏱️</span>
+            <div className="tarjeta-metrica-resumen" style={{ margin: '1em 0'}}>
               <div>
                 <strong>{resumenExito.tiempo}</strong>
-                <span>Duración</span>
+                <span> Duración</span>
               </div>
             </div>
-            <div className="tarjeta-metrica-resumen">
-              <span className="icono">💪</span>
+            <div className="tarjeta-metrica-resumen" style={{ margin: '1em 0'}}>
               <div>
                 <strong>{resumenExito.series}</strong>
-                <span>Series Logradas</span>
+                <span> Series Logradas</span>
               </div>
             </div>
-            <div className="tarjeta-metrica-resumen">
-              <span className="icono">🏋️</span>
+            <div className="tarjeta-metrica-resumen" style={{ margin: '1em 0'}}>
               <div>
                 <strong>{resumenExito.volumenTotal} kg</strong>
-                <span>Volumen Total</span>
+                <span> Volumen Total</span>
               </div>
             </div>
           </div>
@@ -349,7 +345,6 @@ export const EntrenamientoActivo = () => {
   if (!rutina) {
     return (
       <div className="sin-rutina-contenedor tarjeta-vidrio animacion-aparicion">
-        <span style={{ fontSize: '3rem' }}>📋</span>
         <h3>No tienes rutinas asignadas</h3>
         <p>Tu profesor de educación física aún no te ha asignado un plan de entrenamiento. Contacta con tu entrenador para comenzar.</p>
       </div>
@@ -368,7 +363,11 @@ export const EntrenamientoActivo = () => {
         {/* Cronómetro Global si está corriendo */}
         {sesionActiva && (
           <div className="cronometro-global tarjeta-vidrio">
-            <span className="emoji-reloj">⏱️</span>
+            <img
+              src="/src/assets/time.svg"
+              alt="Peso"
+              className="link-icono-img"
+            />
             <span className="tiempo-reloj">{formatearTiempo(tiempoTranscurrido)}</span>
           </div>
         )}
@@ -378,7 +377,6 @@ export const EntrenamientoActivo = () => {
       {tiempoDescanso > 0 && (
         <div className="barra-descanso tarjeta-vidrio animacion-aparicion">
           <div className="barra-descanso-contenido">
-            <span className="emoji-descanso">🧘</span>
             <p>Tiempo de descanso activo: <strong>{tiempoDescanso} segundos</strong></p>
             <button onClick={() => setTiempoDescanso(0)} className="btn-cancelar-descanso">Omitir</button>
           </div>
@@ -423,7 +421,7 @@ export const EntrenamientoActivo = () => {
               </div>
               
               <button onClick={iniciarSesion} className="btn btn-primario btn-iniciar-sesion">
-                🚀 Iniciar Sesión de Musculación
+                Iniciar Sesión de Musculación
               </button>
             </div>
           )}
@@ -434,7 +432,7 @@ export const EntrenamientoActivo = () => {
           <div className="ejecucion-cabecera tarjeta-vidrio">
             <h3>Entrenamiento en Curso: {diaSeleccionado.nombre_dia}</h3>
             <button onClick={() => setMostrarModalFinalizar(true)} className="btn btn-exito">
-              🏁 Finalizar Entrenamiento
+              Finalizar Entrenamiento
             </button>
           </div>
 
@@ -460,7 +458,7 @@ export const EntrenamientoActivo = () => {
                     </div>
                     {ej.ejercicio.video_url && !noHabilitado && (
                       <a href={ej.ejercicio.video_url} target="_blank" rel="noopener noreferrer" className="btn-link-demo">
-                        🎬 Demo
+                        Demo
                       </a>
                     )}
                   </div>
@@ -592,6 +590,11 @@ export const EntrenamientoActivo = () => {
           font-size: 1.2rem;
           font-weight: 700;
           color: #a5b4fc;
+        }
+
+        .link-icono-img {
+          width: 2em;
+          height: 2em;
         }
 
         /* Barra Descanso */
@@ -820,6 +823,9 @@ export const EntrenamientoActivo = () => {
           justify-content: center;
           min-height: 80vh;
           padding: 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 1em;
         }
 
         .resumen-exito-tarjeta {
@@ -827,6 +833,7 @@ export const EntrenamientoActivo = () => {
           width: 100%;
           text-align: center;
           padding: 40px;
+          margin: 3em
         }
 
         .exito-emoji {
@@ -847,34 +854,9 @@ export const EntrenamientoActivo = () => {
           grid-template-columns: repeat(3, 1fr);
           gap: 12px;
           margin-bottom: 30px;
-        }
-
-        .tarjeta-metrica-resumen {
-          background: rgba(0,0,0,0.2);
-          border: 1px solid var(--color-borde);
-          border-radius: 10px;
-          padding: 15px 10px;
           display: flex;
           flex-direction: column;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .tarjeta-metrica-resumen .icono {
-          font-size: 1.5rem;
-        }
-
-        .tarjeta-metrica-resumen strong {
-          display: block;
-          font-size: 0.95rem;
-          font-weight: 700;
-          color: var(--color-texto-principal);
-        }
-
-        .tarjeta-metrica-resumen span {
-          font-size: 0.72rem;
-          color: var(--color-texto-secundario);
-          text-transform: uppercase;
+          gap: 1em;
         }
 
         .boton-volver-entrenamientos {

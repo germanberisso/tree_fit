@@ -381,7 +381,7 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
                 <p>{alumno.perfil_alumno?.objetivos_iniciales || 'No especificados.'}</p>
               </div>
               <button onClick={() => setEditandoFicha(true)} className="btn btn-secundario btn-editar-ficha">
-                ⚙️ Editar Ficha
+                Editar Ficha
               </button>
             </div>
           )}
@@ -538,7 +538,12 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
                 </div>
               ))}
               <button onClick={agregarDia} className="btn btn-secundario btn-agregar-dia">
-                ➕ Agregar Día de Entrenamiento
+                <img
+                  src="/src/assets/plus.svg"
+                  alt="Más"
+                  className="icono-agregar"
+                />
+                Agregar Día de Entrenamiento
               </button>
             </div>
           </div>
@@ -572,7 +577,7 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
                 })) : [{ nombre_dia: 'Día A', orden: 1, ejercicios_rutina: [] }]);
                 setMostrarCreadorRutina(true);
               }} className="btn btn-primario">
-                {rutinaActiva ? '⚙️ Re-Planificar Rutina' : '➕ Diseñar Nueva Rutina'}
+                {rutinaActiva ? 'Re-Planificar Rutina' : 'Diseñar Nueva Rutina'}
               </button>
             </div>
 
@@ -654,7 +659,8 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
               }
               setMostrarModalBiometria(true);
             }} className="btn btn-secundario">
-              ⚖️ Nueva Medición
+              <img src="/src/assets/plus.svg" alt="Más" className="icono-agregar" />
+              Nueva Medición
             </button>
           </div>
 
@@ -683,7 +689,6 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
                       <td>{reg.porcentaje_musculo ? `${reg.porcentaje_musculo}%` : '-'}</td>
                       <td>
                         <div className="tooltip-contenedor">
-                          <span className="icono-perimetros">📏 Ver</span>
                           <div className="tooltip-texto">
                             {reg.cintura ? `Cintura: ${reg.cintura} cm` : ''}
                             {reg.pecho ? `\nPecho: ${reg.pecho} cm` : ''}
@@ -718,7 +723,7 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
                   <div className="sesion-historial-cabecera">
                     <div>
                       <h4>{sesion.dia_rutina?.nombre_dia || 'Sesión de Entrenamiento'}</h4>
-                      <p className="fecha-sesion">📅 {new Date(sesion.fecha_inicio).toLocaleString()}</p>
+                      <p className="fecha-sesion">{new Date(sesion.fecha_inicio).toLocaleString()}</p>
                     </div>
                     <span className="badge badge-exito">Finalizado</span>
                   </div>
@@ -1114,6 +1119,11 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
           border: 1px solid var(--color-borde);
           border-radius: var(--radio-esquina);
           padding: 20px;
+        }
+
+        .icono-agregar {
+          width: 2em;
+          height: 2em;
         }
 
         .dia-tarjeta-cabecera {

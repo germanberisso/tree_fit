@@ -1,34 +1,34 @@
 // Vista de Registro de Cuenta
-import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import React, { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 export const Register = ({ irALogin }) => {
   const { registrar } = useAuth();
-  const [nombreCompleto, setNombreCompleto] = useState('');
-  const [email, setEmail] = useState('');
-  const [clave, setClave] = useState('');
-  const [rol, setRol] = useState('profesor'); // 'profesor' o 'alumno'
+  const [nombreCompleto, setNombreCompleto] = useState("");
+  const [email, setEmail] = useState("");
+  const [clave, setClave] = useState("");
+  const [rol, setRol] = useState("profesor"); // 'profesor' o 'alumno'
   const [cargando, setCargando] = useState(false);
-  const [errorLocal, setErrorLocal] = useState('');
+  const [errorLocal, setErrorLocal] = useState("");
   const [exito, setExito] = useState(false);
 
   const manejarEnvio = async (e) => {
     e.preventDefault();
     if (!nombreCompleto || !email || !clave) {
-      setErrorLocal('Por favor complete todos los campos.');
+      setErrorLocal("Por favor complete todos los campos.");
       return;
     }
 
-    setErrorLocal('');
+    setErrorLocal("");
     setCargando(true);
     try {
       await registrar(email, clave, nombreCompleto, rol);
       setExito(true);
       setTimeout(() => {
         irALogin();
-      }, 2500);
+      }, 4000);
     } catch (err) {
-      setErrorLocal(err.message || 'Error en el registro de la cuenta.');
+      setErrorLocal(err.message || "Error en el registro de la cuenta.");
     } finally {
       setCargando(false);
     }
@@ -38,16 +38,24 @@ export const Register = ({ irALogin }) => {
     <div className="registro-pantalla animacion-aparicion">
       <div className="tarjeta-vidrio registro-tarjeta">
         <div className="registro-cabecera">
-          <span className="logo-emoji">🌱</span>
+          <img src="/src/assets/logo.png" alt="Logo" className="logo" />
           <h2>Crear Cuenta</h2>
           <p className="subtitulo">Regístrate en Tree Fit para comenzar</p>
         </div>
 
         {exito ? (
           <div className="alerta-exito">
-            <span style={{ fontSize: '2rem' }}>🎉</span>
-            <p>¡Cuenta creada exitosamente!</p>
-            <p className="mini-subtitulo">Redireccionando al inicio de sesión...</p>
+            <div className="mensaje-exito">
+              <img
+                src="/src/assets/tick.svg"
+                alt="Éxito"
+                className="icono-exito"
+              />
+              <p>¡Cuenta creada exitosamente!</p>
+            </div>
+            <p className="mini-subtitulo">
+              Redireccionando al inicio de sesión...
+            </p>
           </div>
         ) : (
           <>
@@ -95,21 +103,21 @@ export const Register = ({ irALogin }) => {
               </div>
 
               <div className="input-grupo">
-                <label>Soy un</label>
+                <label>Soy:</label>
                 <div className="selectores-rol">
                   <button
                     type="button"
-                    onClick={() => setRol('profesor')}
-                    className={`selector-rol-btn ${rol === 'profesor' ? 'activo' : ''}`}
+                    onClick={() => setRol("profesor")}
+                    className={`selector-rol-btn ${rol === "profesor" ? "activo" : ""}`}
                   >
-                    💼 Profesor / Personal Trainer
+                    Profesor / Personal Trainer
                   </button>
                   <button
                     type="button"
-                    onClick={() => setRol('alumno')}
-                    className={`selector-rol-btn ${rol === 'alumno' ? 'activo' : ''}`}
+                    onClick={() => setRol("alumno")}
+                    className={`selector-rol-btn ${rol === "alumno" ? "activo" : ""}`}
                   >
-                    🏋️ Alumno de Musculación
+                    Alumno
                   </button>
                 </div>
               </div>
@@ -119,7 +127,7 @@ export const Register = ({ irALogin }) => {
                 disabled={cargando}
                 className="btn btn-primario boton-registro"
               >
-                {cargando ? 'Creando cuenta...' : 'Registrarse'}
+                {cargando ? "Creando cuenta..." : "Registrarse"}
               </button>
             </form>
           </>
@@ -155,12 +163,6 @@ export const Register = ({ irALogin }) => {
           margin-bottom: 30px;
         }
 
-        .logo-emoji {
-          font-size: 3rem;
-          display: block;
-          margin-bottom: 15px;
-        }
-
         .subtitulo {
           color: var(--color-texto-secundario);
           font-size: 0.9rem;
@@ -190,6 +192,19 @@ export const Register = ({ irALogin }) => {
           display: flex;
           flex-direction: column;
           gap: 10px;
+        }
+
+        .mensaje-exito {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+
+        .icono-exito {
+          width: 32px;
+          height: 32px;
         }
 
         .mini-subtitulo {

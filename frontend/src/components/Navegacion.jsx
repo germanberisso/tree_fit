@@ -1,6 +1,12 @@
 // Componente de navegación responsiva
-import React from 'react';
-import { useAuth } from '../context/AuthContext';
+import React from "react";
+import { useAuth } from "../context/AuthContext";
+import peopleIcon from "../assets/people.svg";
+import gymIcon from "../assets/gym.svg";
+import statisticsIcon from "../assets/statistics.svg";
+import thunderIcon from "../assets/thunder.svg";
+import dateIcon from "../assets/date.svg";
+import sessionLeaveIcon from "../assets/session-leave.svg";
 
 export const Navegacion = ({ vistaActiva, setVistaActiva }) => {
   const { usuario, logout, esProfesor } = useAuth();
@@ -9,14 +15,38 @@ export const Navegacion = ({ vistaActiva, setVistaActiva }) => {
 
   const itemsNavegacion = esProfesor
     ? [
-        { id: 'alumnos', etiqueta: 'Alumnos', icono: '👥' },
-        { id: 'ejercicios', etiqueta: 'Ejercicios', icono: '💪' },
-        { id: 'estadisticas', etiqueta: 'Estadísticas', icono: '📊' },
+        {
+          id: "alumnos",
+          etiqueta: "Alumnos",
+          icono: (
+            <img src={peopleIcon} alt="Alumnos" className="link-icono-img" />
+          ),
+        },
+        {
+          id: "ejercicios",
+          etiqueta: "Ejercicios",
+          icono: (
+            <img src={gymIcon} alt="Ejercicios" className="link-icono-img" />
+          ),
+        },
+        {
+          id: "estadisticas",
+          etiqueta: "Estadísticas",
+          icono: (
+            <img src={statisticsIcon} alt="Estadísticas" className="link-icono-img" />
+          ),
+        },
       ]
     : [
-        { id: 'mi_entrenamiento', etiqueta: 'Entrenar', icono: '⚡' },
-        { id: 'historial', etiqueta: 'Historial', icono: '📅' },
-        { id: 'biometria', etiqueta: 'Biometría', icono: '📊' },
+        { id: "mi_entrenamiento", etiqueta: "Entrenar", icono: (
+            <img src={thunderIcon} alt="Historial" className="link-icono-img" />
+          ), },
+        { id: "historial", etiqueta: "Historial", icono: (
+            <img src={dateIcon} alt="Historial" className="link-icono-img" />
+          ), },
+        { id: "biometria", etiqueta: "Biometría", icono: (
+            <img src={statisticsIcon} alt="Estadísticas" className="link-icono-img" />
+          ), },
       ];
 
   return (
@@ -25,15 +55,26 @@ export const Navegacion = ({ vistaActiva, setVistaActiva }) => {
       <aside className="sidebar-escritorio tarjeta-vidrio">
         <div className="sidebar-cabecera">
           <div className="logo-treefit">
-            <span className="logo-icono">🌲</span>
-            <span className="logo-texto">Tree<span className="color-resaltado">Fit</span></span>
+            <img src="/src/assets/logo.png" alt="Logo" className="logo-nav" />
+            <span className="logo-texto">
+              Tree<span className="color-resaltado">Fit</span>
+            </span>
           </div>
           <p className="usuario-info">
             {usuario.nombre_completo}
             <span className="usuario-rol">{usuario.rol}</span>
             {!esProfesor && (
-              <span style={{ fontSize: '0.75rem', marginTop: '2px', opacity: 0.8, fontWeight: 'normal' }}>
-                👨‍🏫 Prof: {usuario.perfil_alumno?.profesor?.nombre_completo || 'No asignado'}
+              <span
+                style={{
+                  fontSize: "0.75rem",
+                  marginTop: "2px",
+                  opacity: 0.8,
+                  fontWeight: "normal",
+                }}
+              >
+                Prof:{" "}
+                {usuario.perfil_alumno?.profesor?.nombre_completo ||
+                  "No asignado"}
               </span>
             )}
           </p>
@@ -44,7 +85,7 @@ export const Navegacion = ({ vistaActiva, setVistaActiva }) => {
             <button
               key={item.id}
               onClick={() => setVistaActiva(item.id)}
-              className={`sidebar-link ${vistaActiva === item.id ? 'activo' : ''}`}
+              className={`sidebar-link ${vistaActiva === item.id ? "activo" : ""}`}
             >
               <span className="link-icono">{item.icono}</span>
               <span className="link-texto">{item.etiqueta}</span>
@@ -54,7 +95,7 @@ export const Navegacion = ({ vistaActiva, setVistaActiva }) => {
 
         <div className="sidebar-pie">
           <button onClick={logout} className="btn btn-secundario boton-logout">
-            <span>🚪</span> Cerrar Sesión
+            <span><img src={sessionLeaveIcon} alt="Cerrar Sesión" className="link-icono-img" /></span> Cerrar Sesión
           </button>
         </div>
       </aside>
@@ -65,14 +106,14 @@ export const Navegacion = ({ vistaActiva, setVistaActiva }) => {
           <button
             key={item.id}
             onClick={() => setVistaActiva(item.id)}
-            className={`mobile-nav-link ${vistaActiva === item.id ? 'activo' : ''}`}
+            className={`mobile-nav-link ${vistaActiva === item.id ? "activo" : ""}`}
           >
             <span className="mobile-icono">{item.icono}</span>
             <span className="mobile-texto">{item.etiqueta}</span>
           </button>
         ))}
         <button onClick={logout} className="mobile-nav-link mobile-logout">
-          <span className="mobile-icono">🚪</span>
+          <img src={sessionLeaveIcon} alt="Cerrar Sesión" className="link-icono-img mobile-icono" />
           <span className="mobile-texto">Salir</span>
         </button>
       </nav>
@@ -101,12 +142,13 @@ export const Navegacion = ({ vistaActiva, setVistaActiva }) => {
         .logo-treefit {
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 12px;
           margin-bottom: 12px;
         }
 
-        .logo-icono {
-          font-size: 1.8rem;
+        .logo-nav {
+          width: 5rem;
+          height: auto;
         }
 
         .logo-texto {
@@ -174,6 +216,11 @@ export const Navegacion = ({ vistaActiva, setVistaActiva }) => {
           font-size: 1.2rem;
         }
 
+        .link-icono-img {
+          width: 1.8rem;
+          height: 1.8rem;
+        }
+
         .boton-logout {
           width: 100%;
           padding: 10px;
@@ -217,10 +264,6 @@ export const Navegacion = ({ vistaActiva, setVistaActiva }) => {
             transition: all 0.2s ease;
             gap: 2px;
             flex: 1;
-          }
-
-          .mobile-icono {
-            font-size: 1.3rem;
           }
 
           .mobile-texto {
