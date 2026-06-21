@@ -106,7 +106,13 @@ export const ListaAlumnos = ({ seleccionarAlumno }) => {
           <p className="descripcion-cabecera">Administra tus alumnos, crea rutinas técnicas y monitorea sus progresos biométricos.</p>
         </div>
         <button onClick={abrirModal} className="btn btn-primario">
-          <span>➕</span> Nuevo Alumno
+          <span>
+            <img
+                src="/src/assets/plus-white.svg"
+                alt="Más"
+                className="icono-agregar"
+              />
+          </span> Nuevo Alumno
         </button>
       </div>
 
@@ -118,7 +124,6 @@ export const ListaAlumnos = ({ seleccionarAlumno }) => {
         <div className="tarjeta-vidrio sin-alumnos">
           <h3>No tienes alumnos asignados todavía</h3>
           <p>Comienza dando de alta a tu primer alumno usando el botón superior.</p>
-          <span style={{ fontSize: '3rem', marginTop: '10px' }}>🏋️‍♂️</span>
         </div>
       ) : (
         <div className="alumnos-grilla">
@@ -165,7 +170,7 @@ export const ListaAlumnos = ({ seleccionarAlumno }) => {
                   className="btn btn-peligro btn-icono"
                   title="Desvincular"
                 >
-                  🗑️
+                  <img src="../src/assets/delete.svg" alt="Eliminar" className="logo-eliminar" />
                 </button>
               </div>
             </div>
@@ -341,6 +346,17 @@ export const ListaAlumnos = ({ seleccionarAlumno }) => {
           display: flex;
           align-items: center;
           gap: 15px;
+        }
+        
+        .logo-eliminar {
+          width: 1.5em;
+          height: 1.5em;
+        
+        }
+
+        .icono-agregar {
+          width: 2em;
+          height: 2em;
         }
 
         .avatar-alumno {

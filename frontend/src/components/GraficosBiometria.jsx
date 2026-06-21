@@ -8,7 +8,6 @@ export const GraficosBiometria = ({ registros }) => {
     return (
       <div className="sin-datos-grafico">
         <p>No hay suficientes datos registrados para trazar la evolución biométrica.</p>
-        <span style={{ fontSize: '3rem' }}>📈</span>
       </div>
     );
   }

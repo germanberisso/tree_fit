@@ -31,7 +31,7 @@ export const Login = ({ irARegistro }) => {
     <div className="login-pantalla animacion-aparicion">
       <div className="tarjeta-vidrio login-tarjeta">
         <div className="login-cabecera">
-          <span className="logo-emoji">🌲</span>
+          <img src="/src/assets/logo.png" alt="Logo" className="logo" />
           <h2>Iniciar Sesión</h2>
           <p className="subtitulo">Ingresa a tu portal de entrenamiento Tree Fit</p>
         </div>
@@ -102,12 +102,6 @@ export const Login = ({ irARegistro }) => {
         .login-cabecera {
           text-align: center;
           margin-bottom: 30px;
-        }
-
-        .logo-emoji {
-          font-size: 3rem;
-          display: block;
-          margin-bottom: 15px;
         }
 
         .subtitulo {

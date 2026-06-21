@@ -49,7 +49,7 @@ export const CatalogoEjercicios = () => {
     cargarDatos();
   }, [grupoMuscular, busqueda]);
 
-  const gruposMusculares = ['Pecho', 'Espalda', 'Piernas', 'Hombros', 'Brazos', 'Core'];
+  const gruposMusculares = ['Pecho', 'Espalda', 'Piernas', 'Hombros', 'Brazos', 'Core', 'Glúteos'];
 
   // Abrir formulario para crear nuevo equipamiento
   const abrirCrearEquipo = () => {
@@ -301,12 +301,12 @@ export const CatalogoEjercicios = () => {
                       <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
                         {ej.equipamiento ? (
                           <span className={`equipamiento-etiqueta-recurso ${!ej.equipamiento.disponible ? 'no-disponible' : ''}`}>
-                            🛠️ Requiere: <strong>{ej.equipamiento.nombre}</strong>
+                            Requiere: <strong>{ej.equipamiento.nombre}</strong>
                             {!ej.equipamiento.disponible && <span className="etiqueta-no-disp"> (No disponible)</span>}
                           </span>
                         ) : (
                           <span className="equipamiento-etiqueta-recurso libre">
-                            🤸 Peso Corporal (Sin equipo)
+                            Peso Corporal (Sin equipo)
                           </span>
                         )}
 
@@ -317,14 +317,14 @@ export const CatalogoEjercicios = () => {
                             rel="noopener noreferrer"
                             className="btn-link-demo"
                           >
-                            🎥 Ver Demo
+                            Ver Demo
                           </a>
                         )}
                       </div>
 
                       <div className="equipamiento-acciones">
                         <button className="btn-accion-equipo btn-editar-equipo" onClick={() => abrirEditarEjercicio(ej)}>
-                          ✏️ Editar
+                          <img src="src/assets/pencil.svg" alt="Editar" className="icono-editar"/> Editar
                         </button>
                         <button
                           className={`btn-accion-equipo ${ej.activo ? 'btn-deshabilitar' : 'btn-habilitar'}`}
@@ -424,7 +424,7 @@ export const CatalogoEjercicios = () => {
                       onClick={() => abrirEditarEquipo(eq)}
                       title="Editar"
                     >
-                      ✏️ Editar
+                      <img src="src/assets/pencil.svg" alt="Editar" className="icono-editar"/> Editar
                     </button>
                     <button
                       className={`btn-accion-equipo ${eq.disponible ? 'btn-deshabilitar' : 'btn-habilitar'}`}
@@ -476,6 +476,12 @@ export const CatalogoEjercicios = () => {
           display: flex;
           flex-direction: column;
           gap: 10px;
+        }
+
+        .icono-editar{
+          width: 16px;
+          height: 16px;
+          margin-right: 4px;
         }
 
         .ejercicio-inactivo {
