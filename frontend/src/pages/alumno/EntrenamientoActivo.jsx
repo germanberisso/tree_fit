@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { api } from '../../services/api';
+import timeIcon from '../../assets/time.svg';
 
 export const EntrenamientoActivo = () => {
   const [rutina, setRutina] = useState(null);
@@ -364,8 +365,8 @@ export const EntrenamientoActivo = () => {
         {sesionActiva && (
           <div className="cronometro-global tarjeta-vidrio">
             <img
-              src="/src/assets/time.svg"
-              alt="Peso"
+              src={timeIcon}
+              alt="Tiempo"
               className="link-icono-img"
             />
             <span className="tiempo-reloj">{formatearTiempo(tiempoTranscurrido)}</span>

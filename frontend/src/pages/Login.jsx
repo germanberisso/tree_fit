@@ -1,6 +1,7 @@
 // Vista de Inicio de Sesión
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import logoImg from '../assets/logo.png';
 
 export const Login = ({ irARegistro }) => {
   const { login, error: authError } = useAuth();
@@ -31,7 +32,7 @@ export const Login = ({ irARegistro }) => {
     <div className="login-pantalla animacion-aparicion">
       <div className="tarjeta-vidrio login-tarjeta">
         <div className="login-cabecera">
-          <img src="/src/assets/logo.png" alt="Logo" className="logo" />
+          <img src={logoImg} alt="Logo" className="logo" />
           <h2>Iniciar Sesión</h2>
           <p className="subtitulo">Ingresa a tu portal de entrenamiento Tree Fit</p>
         </div>

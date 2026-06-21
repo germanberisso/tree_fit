@@ -241,7 +241,7 @@ export const CatalogoEjercicios = () => {
               <div className="form-equipo-panel tarjeta-vidrio animacion-aparicion" ref={formEjercicioRef}>
                 <h4>{ejercicioEditando ? 'Editar Ejercicio' : 'Nuevo Ejercicio'}</h4>
                 <form onSubmit={guardarEjercicio}>
-                  <div className="controles-busqueda-grilla" style={{marginBottom: '10px'}}>
+                  <div className="controles-busqueda-grilla" style={{ marginBottom: '10px' }}>
                     <div className="input-grupo flex-2">
                       <label>Nombre *</label>
                       <input type="text" className="input-control" value={formNombreEj} onChange={e => setFormNombreEj(e.target.value)} required />
@@ -257,7 +257,7 @@ export const CatalogoEjercicios = () => {
                     <label>Descripción</label>
                     <input type="text" className="input-control" value={formDescEj} onChange={e => setFormDescEj(e.target.value)} />
                   </div>
-                  <div className="controles-busqueda-grilla" style={{marginBottom: '10px'}}>
+                  <div className="controles-busqueda-grilla" style={{ marginBottom: '10px' }}>
                     <div className="input-grupo flex-2">
                       <label>URL Video Demo</label>
                       <input type="url" className="input-control" value={formVideoEj} onChange={e => setFormVideoEj(e.target.value)} placeholder="https://youtube.com/..." />
@@ -298,7 +298,7 @@ export const CatalogoEjercicios = () => {
                     <p className="ejercicio-descripcion">{ej.descripcion || 'Sin descripción detallada.'}</p>
 
                     <div className="ejercicio-item-pie">
-                      <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {ej.equipamiento ? (
                           <span className={`equipamiento-etiqueta-recurso ${!ej.equipamiento.disponible ? 'no-disponible' : ''}`}>
                             Requiere: <strong>{ej.equipamiento.nombre}</strong>
@@ -324,7 +324,7 @@ export const CatalogoEjercicios = () => {
 
                       <div className="equipamiento-acciones">
                         <button className="btn-accion-equipo btn-editar-equipo" onClick={() => abrirEditarEjercicio(ej)}>
-                          <img src="src/assets/pencil.svg" alt="Editar" className="icono-editar"/> Editar
+                          <img src="src/assets/pencil.svg" alt="Editar" className="icono-editar" /> Editar
                         </button>
                         <button
                           className={`btn-accion-equipo ${ej.activo ? 'btn-deshabilitar' : 'btn-habilitar'}`}
@@ -348,7 +348,7 @@ export const CatalogoEjercicios = () => {
                 className="btn btn-primario btn-nuevo-equipo"
                 onClick={abrirCrearEquipo}
               >
-                + Nuevo
+                + Nuevo Equipo
               </button>
             </div>
 
@@ -424,7 +424,7 @@ export const CatalogoEjercicios = () => {
                       onClick={() => abrirEditarEquipo(eq)}
                       title="Editar"
                     >
-                      <img src="src/assets/pencil.svg" alt="Editar" className="icono-editar"/> Editar
+                      <img src="src/assets/pencil.svg" alt="Editar" className="icono-editar" /> Editar
                     </button>
                     <button
                       className={`btn-accion-equipo ${eq.disponible ? 'btn-deshabilitar' : 'btn-habilitar'}`}
@@ -646,6 +646,7 @@ export const CatalogoEjercicios = () => {
         }
 
         .btn-accion-equipo {
+          display: flex;
           background: none;
           border: 1px solid var(--color-borde);
           border-radius: 6px;

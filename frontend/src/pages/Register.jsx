@@ -1,6 +1,8 @@
 // Vista de Registro de Cuenta
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import logoImg from "../assets/logo.png";
+import tickIcon from "../assets/tick.svg";
 
 export const Register = ({ irALogin }) => {
   const { registrar } = useAuth();
@@ -38,7 +40,7 @@ export const Register = ({ irALogin }) => {
     <div className="registro-pantalla animacion-aparicion">
       <div className="tarjeta-vidrio registro-tarjeta">
         <div className="registro-cabecera">
-          <img src="/src/assets/logo.png" alt="Logo" className="logo" />
+          <img src={logoImg} alt="Logo" className="logo" />
           <h2>Crear Cuenta</h2>
           <p className="subtitulo">Regístrate en Tree Fit para comenzar</p>
         </div>
@@ -47,7 +49,7 @@ export const Register = ({ irALogin }) => {
           <div className="alerta-exito">
             <div className="mensaje-exito">
               <img
-                src="/src/assets/tick.svg"
+                src={tickIcon}
                 alt="Éxito"
                 className="icono-exito"
               />

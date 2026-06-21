@@ -2,12 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { api } from '../../services/api';
+import plusWhiteIcon from '../../assets/plus-white.svg';
+import deleteIcon from '../../assets/delete.svg';
 
 export const ListaAlumnos = ({ seleccionarAlumno }) => {
   const [alumnos, setAlumnos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
-  
+
   // Estados para el Modal de Alta de Alumno
   const [mostrarModal, setMostrarModal] = useState(false);
   const [modoModal, setModoModal] = useState('crear'); // 'crear' o 'vincular'
@@ -106,13 +108,11 @@ export const ListaAlumnos = ({ seleccionarAlumno }) => {
           <p className="descripcion-cabecera">Administra tus alumnos, crea rutinas técnicas y monitorea sus progresos biométricos.</p>
         </div>
         <button onClick={abrirModal} className="btn btn-primario">
-          <span>
-            <img
-                src="/src/assets/plus-white.svg"
-                alt="Más"
-                className="icono-agregar"
-              />
-          </span> Nuevo Alumno
+          <img
+            src={plusWhiteIcon}
+            alt="Más"
+            className="icono-agregar"
+          /> Nuevo Alumno
         </button>
       </div>
 
@@ -150,7 +150,7 @@ export const ListaAlumnos = ({ seleccionarAlumno }) => {
                 ) : (
                   <p className="sin-alerta-salud">Sin alertas de salud médicas</p>
                 )}
-                
+
                 {alumno.perfil_alumno?.objetivos_iniciales && (
                   <p className="objetivos-resumen">
                     <strong>Objetivo:</strong> {alumno.perfil_alumno.objetivos_iniciales}
@@ -170,7 +170,7 @@ export const ListaAlumnos = ({ seleccionarAlumno }) => {
                   className="btn btn-peligro btn-icono"
                   title="Desvincular"
                 >
-                  <img src="../src/assets/delete.svg" alt="Eliminar" className="logo-eliminar" />
+                  <img src={deleteIcon} alt="Eliminar" className="logo-eliminar" />
                 </button>
               </div>
             </div>
@@ -186,26 +186,26 @@ export const ListaAlumnos = ({ seleccionarAlumno }) => {
               <h3>{modoModal === 'crear' ? 'Alta de Nuevo Alumno' : 'Vincular Alumno Existente'}</h3>
               <button onClick={() => setMostrarModal(false)} className="btn-cerrar">✕</button>
             </div>
-            
+
             <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-              <button 
-                className={`btn ${modoModal === 'crear' ? 'btn-primario' : 'btn-secundario'}`} 
+              <button
+                className={`btn ${modoModal === 'crear' ? 'btn-primario' : 'btn-secundario'}`}
                 onClick={() => setModoModal('crear')}
-                style={{flex: 1}}
+                style={{ flex: 1 }}
               >
                 Crear Nuevo
               </button>
-              <button 
-                className={`btn ${modoModal === 'vincular' ? 'btn-primario' : 'btn-secundario'}`} 
+              <button
+                className={`btn ${modoModal === 'vincular' ? 'btn-primario' : 'btn-secundario'}`}
                 onClick={() => setModoModal('vincular')}
-                style={{flex: 1}}
+                style={{ flex: 1 }}
               >
                 Vincular Existente
               </button>
             </div>
 
             <form onSubmit={manejarAccionModal} className="modal-formulario">
-              
+
               {modoModal === 'crear' && (
                 <div className="input-grupo">
                   <label>Nombre Completo *</label>
@@ -271,7 +271,7 @@ export const ListaAlumnos = ({ seleccionarAlumno }) => {
               )}
 
               {modoModal === 'vincular' && (
-                <p style={{fontSize: '0.85rem', color: 'var(--color-texto-secundario)', marginBottom: '15px'}}>
+                <p style={{ fontSize: '0.85rem', color: 'var(--color-texto-secundario)', marginBottom: '15px' }}>
                   El alumno debe haberse registrado previamente por su cuenta para poder vincularlo.
                 </p>
               )}
@@ -392,7 +392,8 @@ export const ListaAlumnos = ({ seleccionarAlumno }) => {
           border-radius: 8px;
           padding: 8px 12px;
           display: flex;
-          align-items: flex-start;
+          align-items: center;
+          justify-content: flex-start;
           gap: 8px;
         }
 
@@ -409,6 +410,8 @@ export const ListaAlumnos = ({ seleccionarAlumno }) => {
           display: -webkit-box;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
+          margin: 0;
+          margin-top: 3px;
         }
 
         .sin-alerta-salud {

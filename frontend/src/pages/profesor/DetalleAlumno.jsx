@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { api } from '../../services/api';
 import { GraficosBiometria } from '../../components/GraficosBiometria';
+import plusIcon from '../../assets/plus.svg';
 
 export const DetalleAlumno = ({ alumnoId, volver }) => {
   const [alumno, setAlumno] = useState(null);
@@ -539,7 +540,7 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
               ))}
               <button onClick={agregarDia} className="btn btn-secundario btn-agregar-dia">
                 <img
-                  src="/src/assets/plus.svg"
+                  src={plusIcon}
                   alt="Más"
                   className="icono-agregar"
                 />
@@ -659,7 +660,7 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
               }
               setMostrarModalBiometria(true);
             }} className="btn btn-secundario">
-              <img src="/src/assets/plus.svg" alt="Más" className="icono-agregar" />
+              <img src={plusIcon} alt="Más" className="icono-agregar" />
               Nueva Medición
             </button>
           </div>
@@ -986,6 +987,20 @@ export const DetalleAlumno = ({ alumnoId, volver }) => {
           gap: 20px;
           border-bottom: 1px solid var(--color-borde);
           padding-bottom: 15px;
+        }
+
+        .avatar-alumno {
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--color-primario), #312e81);
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+          font-size: 1.2rem;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
         .avatar-alumno.grande {

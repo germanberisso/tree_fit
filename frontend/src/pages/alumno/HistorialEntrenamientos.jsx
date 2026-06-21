@@ -1,6 +1,8 @@
 // Vista de Historial de Entrenamientos (para Alumnos)
 import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
+import timeIcon from '../../assets/time.svg';
+import weightIcon from '../../assets/weight.svg';
 
 export const HistorialEntrenamientos = () => {
   const [historial, setHistorial] = useState([]);
@@ -63,15 +65,15 @@ export const HistorialEntrenamientos = () => {
                     </span>
                     <h3 className="titulo-dia-sesion">{sesion.dia_rutina?.nombre_dia || 'Sesión de Musculación'}</h3>
                   </div>
-                  
+
                   <div className="metrica-rapida-sesion">
-                    {duracionMins && <span className="duracion"><img
-                      src="/src/assets/time.svg"
+                    {duracionMins >= 0 && <span className="duracion"><img
+                      src={timeIcon}
                       alt="Tiempo"
                       className="link-icono-img"
                     /> {duracionMins} min</span>}
                     <span className="volumen"><img
-                      src="/src/assets/weight.svg"
+                      src={weightIcon}
                       alt="Peso"
                       className="link-icono-img"
                     /> {volumenTotal} kg levantados</span>
@@ -86,7 +88,7 @@ export const HistorialEntrenamientos = () => {
 
                 <div className="series-desglose">
                   <h4>Desglose de Ejercicios Realizados:</h4>
-                  
+
                   {/* Agrupar series por ejercicio */}
                   <div className="ejercicios-agrupados-lista">
                     {Object.values(
@@ -163,6 +165,9 @@ export const HistorialEntrenamientos = () => {
         }
 
         .metrica-rapida-sesion .duracion {
+          display: flex;
+          align-items: center;
+          gap: 5px;
           color: #a5b4fc;
           background: rgba(99, 102, 241, 0.1);
           padding: 4px 10px;
@@ -175,6 +180,9 @@ export const HistorialEntrenamientos = () => {
         }
 
         .metrica-rapida-sesion .volumen {
+          display: flex;
+          align-items: center;
+          gap: 5px;
           color: #34d399;
           background: rgba(16, 185, 129, 0.1);
           padding: 4px 10px;

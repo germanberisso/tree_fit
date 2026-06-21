@@ -7,6 +7,7 @@ import statisticsIcon from "../assets/statistics.svg";
 import thunderIcon from "../assets/thunder.svg";
 import dateIcon from "../assets/date.svg";
 import sessionLeaveIcon from "../assets/session-leave.svg";
+import logoImg from "../assets/logo.png";
 
 export const Navegacion = ({ vistaActiva, setVistaActiva }) => {
   const { usuario, logout, esProfesor } = useAuth();
@@ -55,7 +56,7 @@ export const Navegacion = ({ vistaActiva, setVistaActiva }) => {
       <aside className="sidebar-escritorio tarjeta-vidrio">
         <div className="sidebar-cabecera">
           <div className="logo-treefit">
-            <img src="/src/assets/logo.png" alt="Logo" className="logo-nav" />
+            <img src={logoImg} alt="Logo" className="logo-nav" />
             <span className="logo-texto">
               Tree<span className="color-resaltado">Fit</span>
             </span>
