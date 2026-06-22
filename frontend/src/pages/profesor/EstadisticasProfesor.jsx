@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
+import peopleIcon from '../../assets/people.svg';
+import listIcon from '../../assets/list.svg';
+import thunderIcon from '../../assets/thunder.svg';
+import gymIcon from '../../assets/gym.svg';
+import statisticsIcon from '../../assets/statistics.svg';
 
 export const EstadisticasProfesor = () => {
   const [estadisticas, setEstadisticas] = useState(null);
@@ -35,7 +40,7 @@ export const EstadisticasProfesor = () => {
 
       <div className="metricas-grilla">
         <div className="tarjeta-vidrio tarjeta-kpi">
-          <div className="kpi-icono" style={{ background: 'rgba(99, 102, 241, 0.1)', color: '#a5b4fc' }}><img src="src/assets/people.svg" alt="Alumnos" className="icono-kpi-grande" /></div>
+          <div className="kpi-icono" style={{ background: 'rgba(99, 102, 241, 0.1)', color: '#a5b4fc' }}><img src={peopleIcon} alt="Alumnos" className="icono-kpi-grande" /></div>
           <div className="kpi-info">
             <h3>{estadisticas.total_alumnos}</h3>
             <span>Alumnos Activos</span>
@@ -43,7 +48,7 @@ export const EstadisticasProfesor = () => {
         </div>
 
         <div className="tarjeta-vidrio tarjeta-kpi">
-          <div className="kpi-icono" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#34d399' }}><img src="src/assets/list.svg" alt="Rutinas" className="icono-kpi-grande" /></div>
+          <div className="kpi-icono" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#34d399' }}><img src={listIcon} alt="Rutinas" className="icono-kpi-grande" /></div>
           <div className="kpi-info">
             <h3>{estadisticas.rutinas_activas}</h3>
             <span>Rutinas Asignadas</span>
@@ -51,7 +56,7 @@ export const EstadisticasProfesor = () => {
         </div>
 
         <div className="tarjeta-vidrio tarjeta-kpi">
-          <div className="kpi-icono" style={{ background: 'rgba(245, 158, 11, 0.1)', color: '#fbbf24' }}><img src="src/assets/thunder.svg" alt="Entrenamientos" className="icono-kpi-grande" /></div>
+          <div className="kpi-icono" style={{ background: 'rgba(245, 158, 11, 0.1)', color: '#fbbf24' }}><img src={thunderIcon} alt="Entrenamientos" className="icono-kpi-grande" /></div>
           <div className="kpi-info">
             <h3>{estadisticas.entrenamientos_semana}</h3>
             <span>Entrenamientos esta semana</span>
@@ -59,7 +64,7 @@ export const EstadisticasProfesor = () => {
         </div>
 
         <div className="tarjeta-vidrio tarjeta-kpi">
-          <div className="kpi-icono" style={{ background: 'rgba(236, 72, 153, 0.1)', color: '#f472b6' }}><img src="src/assets/gym.svg" alt="Volumen Total" className="icono-kpi-grande" /></div>
+          <div className="kpi-icono" style={{ background: 'rgba(236, 72, 153, 0.1)', color: '#f472b6' }}><img src={gymIcon} alt="Volumen Total" className="icono-kpi-grande" /></div>
           <div className="kpi-info">
             <h3>{estadisticas.volumen_total_kg} kg</h3>
             <span>Volumen Total Levantado</span>
@@ -74,7 +79,7 @@ export const EstadisticasProfesor = () => {
         </div>
 
         <div className="tarjeta-vidrio tarjeta-kpi">
-          <div className="kpi-icono" style={{ background: 'rgba(139, 92, 246, 0.1)', color: '#a78bfa' }}><img src="src/assets/statistics.svg" alt="Registros Biométricos" className="icono-kpi-grande" /></div>
+          <div className="kpi-icono" style={{ background: 'rgba(139, 92, 246, 0.1)', color: '#a78bfa' }}><img src={statisticsIcon} alt="Registros Biométricos" className="icono-kpi-grande" /></div>
           <div className="kpi-info">
             <h3>{estadisticas.total_registros_biometricos}</h3>
             <span>Registros Biométricos Totales</span>

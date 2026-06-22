@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
 import toast from 'react-hot-toast';
+import pencilIcon from '../../assets/pencil.svg';
 
 export const CatalogoEjercicios = () => {
   const [ejercicios, setEjercicios] = useState([]);
@@ -324,7 +325,7 @@ export const CatalogoEjercicios = () => {
 
                       <div className="equipamiento-acciones">
                         <button className="btn-accion-equipo btn-editar-equipo" onClick={() => abrirEditarEjercicio(ej)}>
-                          <img src="src/assets/pencil.svg" alt="Editar" className="icono-editar" /> Editar
+                          <img src={pencilIcon} alt="Editar" className="icono-editar" /> Editar
                         </button>
                         <button
                           className={`btn-accion-equipo ${ej.activo ? 'btn-deshabilitar' : 'btn-habilitar'}`}
@@ -424,7 +425,7 @@ export const CatalogoEjercicios = () => {
                       onClick={() => abrirEditarEquipo(eq)}
                       title="Editar"
                     >
-                      <img src="src/assets/pencil.svg" alt="Editar" className="icono-editar" /> Editar
+                      <img src={pencilIcon} alt="Editar" className="icono-editar" /> Editar
                     </button>
                     <button
                       className={`btn-accion-equipo ${eq.disponible ? 'btn-deshabilitar' : 'btn-habilitar'}`}
